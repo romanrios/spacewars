@@ -7,7 +7,7 @@ import { StateAnimation } from "./StateAnimation";
 export class Player extends PhysicsContainer implements IHitbox {
     
     public static readonly MOVE_SPEED = 350;
-    public static SHOOT_DELAY: number = 700;
+    public static SHOOT_DELAY: number = 300;
 
     private shipAnimated: StateAnimation;
     private hitbox: Graphics;

@@ -1,4 +1,4 @@
-import { Container, Texture, TilingSprite } from "pixi.js";
+import { Container, Sprite, Texture } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -11,7 +11,8 @@ import { ScoreUI } from "../UI/ScoreUI";
 export class Scene1 extends Container implements IScene {
     public static player: Player;
 
-    private background: TilingSprite;
+    private bgContainer: Container;
+
     private elapsedTime: number = 0;
     private enemies: Enemy[] = [];
     private shots: Shot[] = [];
@@ -23,17 +24,27 @@ export class Scene1 extends Container implements IScene {
     private spawnTime: number = 3000;
 
 
+
     constructor() {
         super();
 
-        this.background = new TilingSprite(Texture.from("./background.png"));
-        this.background.tileScale.set(6);
-        this.background.width = Manager.width;
-        this.background.height = Manager.height;
-        this.addChild(this.background);
+        const bgTexture = Texture.from("./background.png");
+        this.bgContainer = new Container();
+        this.addChild(this.bgContainer);
+
+        const background = Sprite.from(bgTexture)
+        background.width = Manager.width;
+        background.height = Manager.height;
+        this.bgContainer.addChild(background);
+
+        const background2 = Sprite.from(bgTexture)
+        background2.width = Manager.width;
+        background2.height = Manager.height;
+        background2.y = -1280;
+        this.bgContainer.addChild(background2);
 
         Scene1.player = new Player();
-        Scene1.player.position.set(Manager.width / 2, Manager.height-50)
+        Scene1.player.position.set(Manager.width / 2, Manager.height - 50)
         Scene1.player.scale.set(6);
         this.addChild(Scene1.player);
 
@@ -70,11 +81,12 @@ export class Scene1 extends Container implements IScene {
         this.elapsedTime += _deltaTime;
         Scene1.player.update(_deltaTime);
 
-        this.background.tilePosition.y += _deltaTime * 0.3;
-        this.background.tilePosition.y %= 1536;
+        this.bgContainer.y += _deltaTime * 0.3;
+        this.bgContainer.y %= Manager.height;
+
 
         // ENEMIES
-        if (this.elapsedTime > Math.random() * this.spawnTime + 1000) {
+        if (this.elapsedTime > Math.random() * this.spawnTime ) {
             const enemy = new Enemy();
             this.addChild(enemy);
             this.enemies.push(enemy);
@@ -92,7 +104,7 @@ export class Scene1 extends Container implements IScene {
             }
 
             // GAME OVER
-            if (checkCollision(enemy, Scene1.player)) {
+            if (checkCollision(enemy, Scene1.player) && !this.gameover) {
                 this.removeChild(Scene1.player);
                 this.gameover = true;
                 const gameover = new GameOver();
@@ -115,13 +127,17 @@ export class Scene1 extends Container implements IScene {
             this.addChild(shot);
             this.shots.push(shot);
 
-            // const shotL = new Shot(-200);
-            // shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
-            // this.addChild(shotL);
+            const shotL = new Shot(-200);
+            shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
+            this.addChild(shotL);
+            this.shots.push(shotL);
 
-            // const shotR = new Shot(200);
-            // shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
-            // this.addChild(shotR);         
+
+            const shotR = new Shot(200);
+            shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
+            this.addChild(shotR); 
+            this.shots.push(shotR);
+        
         }
 
 
@@ -152,7 +168,7 @@ export class Scene1 extends Container implements IScene {
 
                     //SCORE
                     this.score.score += 100;
-                    this.score.text.text = "SCORE "+String(this.score.score);
+                    this.score.text.text = "SCORE " + String(this.score.score);
 
                     // Sale del bucle interno ya que el disparo colisionó con un enemigo
                     break;
