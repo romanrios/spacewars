@@ -16,7 +16,13 @@ export const manifest: ResolverManifest = {
                 Enemy03: "enemy03.png",
                 Enemy04: "enemy04.png",
 
-                Font: "PressStart2P.ttf"
+                Font: "PressStart2P.ttf",
+
+                SongTitle: "naves_song_title.mp3",
+                SongLevel: "naves_song_level.mp3",
+                GameOver: "gameover.mp3",
+                EnemyKilled: "enemy_killed.mp3",
+
             }
         }
     ]

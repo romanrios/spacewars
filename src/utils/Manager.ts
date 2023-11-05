@@ -40,7 +40,8 @@ export class Manager {
             width: width,
             height: height,
             antialias: false,
-            useContextAlpha: false
+            premultipliedAlpha: false,
+            backgroundAlpha: 1
         });
 
         // eslint-disable-line ***PIXI DEV TOOLS***

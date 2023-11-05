@@ -7,6 +7,8 @@ import { checkCollision } from "../game/IHitbox";
 import { Shot } from "../game/Shot";
 import { GameOver } from "../UI/GameOver";
 import { ScoreUI } from "../UI/ScoreUI";
+import { sound } from "@pixi/sound";
+
 
 export class Scene1 extends Container implements IScene {
     public static player: Player;
@@ -21,16 +23,21 @@ export class Scene1 extends Container implements IScene {
 
     private isDragging: boolean = false;
     private score: ScoreUI;
-    private spawnTime: number = 3000;
-
-
+    private spawnTime: number = 2500;
+    private world: Container;
 
     constructor() {
         super();
 
+        sound.stopAll();
+        sound.play("SongLevel", { volume: 0.5, loop: true, singleInstance: true });
+
+        this.world = new Container();
+        this.addChild(this.world);
+
         const bgTexture = Texture.from("./background.png");
         this.bgContainer = new Container();
-        this.addChild(this.bgContainer);
+        this.world.addChild(this.bgContainer);
 
         const background = Sprite.from(bgTexture)
         background.width = Manager.width;
@@ -46,7 +53,7 @@ export class Scene1 extends Container implements IScene {
         Scene1.player = new Player();
         Scene1.player.position.set(Manager.width / 2, Manager.height - 50)
         Scene1.player.scale.set(6);
-        this.addChild(Scene1.player);
+        this.world.addChild(Scene1.player);
 
         this.score = new ScoreUI();
         this.addChild(this.score);
@@ -86,12 +93,16 @@ export class Scene1 extends Container implements IScene {
 
 
         // ENEMIES
-        if (this.elapsedTime > Math.random() * this.spawnTime ) {
-            const enemy = new Enemy();
-            this.addChild(enemy);
-            this.enemies.push(enemy);
+
+        if (this.elapsedTime > Math.random() * 3000 + this.spawnTime) {
+            for (let i = 0; i < ((Math.random() * 10 + 1)); i++) {
+                const enemy = new Enemy();
+                this.world.addChild(enemy);
+                this.enemies.push(enemy);
+            }
+
             this.elapsedTime = 0;
-            this.spawnTime -= 10;
+            this.spawnTime *= 0.95;
         }
 
         for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -105,7 +116,9 @@ export class Scene1 extends Container implements IScene {
 
             // GAME OVER
             if (checkCollision(enemy, Scene1.player) && !this.gameover) {
-                this.removeChild(Scene1.player);
+                sound.stopAll();
+                sound.play("GameOver", { volume: 0.6, singleInstance: true });
+                this.world.removeChild(Scene1.player);
                 this.gameover = true;
                 const gameover = new GameOver();
                 this.addChild(gameover);
@@ -124,20 +137,20 @@ export class Scene1 extends Container implements IScene {
             setTimeout(() => { this.canShoot = true }, Player.SHOOT_DELAY);
             const shot = new Shot(0);
             shot.position.set(Scene1.player.x, Scene1.player.y - 20);
-            this.addChild(shot);
+            this.world.addChild(shot);
             this.shots.push(shot);
 
             const shotL = new Shot(-200);
             shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
-            this.addChild(shotL);
+            this.world.addChild(shotL);
             this.shots.push(shotL);
 
 
             const shotR = new Shot(200);
             shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
-            this.addChild(shotR); 
+            this.world.addChild(shotR);
             this.shots.push(shotR);
-        
+
         }
 
 
@@ -154,6 +167,8 @@ export class Scene1 extends Container implements IScene {
             for (let j = this.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.enemies[j];
                 if (checkCollision(enemy, shot)) {
+                    sound.play("EnemyKilled", { volume: 0.4, singleInstance: true })
+
                     // Elimina el disparo y el enemigo
                     this.shots.splice(i, 1);
                     this.enemies.splice(j, 1);

@@ -23,13 +23,13 @@ export class Enemy extends PhysicsContainer implements IHitbox {
         this.hitbox.scale.set(6);
         this.addChild(this.hitbox);
 
-        this.x = Math.random() * 660 + 20;
+        this.x = Math.random() * 900 - 100;
         this.y = -50;
 
 
 
         this.tween = new Tween(this)
-            .to({ x: Math.random() * 660 + 20, y: this.y + 1400 }, Math.random() * 2500 + 2500)
+            .to({ x: Math.random() * 900 - 100, y: this.y + 1400 }, Math.random() * 3000 + 2000)
             .start()
 
     }
