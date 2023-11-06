@@ -8,6 +8,7 @@ import { Shot } from "../game/Shot";
 import { GameOver } from "../UI/GameOver";
 import { ScoreUI } from "../UI/ScoreUI";
 import { sound } from "@pixi/sound";
+import { Item } from "../game/Item";
 
 
 export class Scene1 extends Container implements IScene {
@@ -15,22 +16,25 @@ export class Scene1 extends Container implements IScene {
 
     private bgContainer: Container;
 
-    private elapsedTime: number = 0;
+    private enemyNumber: number = 0;
+    private enemySpawnTime: number = 0;
+    private enemyMaxSpawnTime: number = 7000;
+    private itemSpawnTime: number = 0;
     private enemies: Enemy[] = [];
     private shots: Shot[] = [];
+    private items: Item[] = [];
     private canShoot: boolean = true;
     private gameover: boolean = false;
 
     private isDragging: boolean = false;
     private score: ScoreUI;
-    private spawnTime: number = 2500;
     private world: Container;
 
     constructor() {
         super();
 
         sound.stopAll();
-        sound.play("SongLevel", { volume: 0.5, loop: true, singleInstance: true });
+        sound.play("SongLevel", { volume: 0.6, loop: true, singleInstance: true });
 
         this.world = new Container();
         this.addChild(this.world);
@@ -83,26 +87,70 @@ export class Scene1 extends Container implements IScene {
     }
 
 
+
     public update(_deltaTime: number, _deltaFrame: number) {
 
-        this.elapsedTime += _deltaTime;
+        this.itemSpawnTime += _deltaTime;
+        this.enemySpawnTime += _deltaTime;
         Scene1.player.update(_deltaTime);
 
         this.bgContainer.y += _deltaTime * 0.3;
         this.bgContainer.y %= Manager.height;
 
 
-        // ENEMIES
 
-        if (this.elapsedTime > Math.random() * 3000 + this.spawnTime) {
-            for (let i = 0; i < ((Math.random() * 10 + 1)); i++) {
+        //ITEMS
+        if (this.itemSpawnTime > Math.random() * 20000 + 13000) {
+            const item = new Item(Math.random() * 6 + 1);
+            this.world.addChild(item);
+            this.items.push(item);
+            this.itemSpawnTime = 0;
+        }
+
+        for (let i = this.items.length - 1; i >= 0; i--) {
+            const item = this.items[i];
+
+            if (item.y >= Manager.height) {
+                this.items.splice(i, 1);
+                item.tween.stop();
+                item.tween2.stop();
+                item.destroy();
+            } else if (checkCollision(item, Scene1.player) && !this.gameover) {
+                sound.play("Item", { volume: 0.4, singleInstance: true });
+                this.items.splice(i, 1);
+                item.tween.stop();
+                item.tween2.stop();
+                item.destroy();
+                if (item.id <= 6) {
+                    Player.SHOOT_DELAY *= 0.95;
+                } else if (Player.SHOOT_STYLE == "normal") {
+                    Player.SHOOT_STYLE = "double";
+                    Player.SHOOT_DELAY /= 0.9;
+                } else if (Player.SHOOT_STYLE == "double") {
+                    Player.SHOOT_STYLE = "triple";
+                    Player.SHOOT_DELAY /= 0.9;
+                } else {
+                    Player.SHOOT_DELAY *= 0.9;
+                }
+            }
+
+        }
+
+
+
+
+
+
+        // ENEMIES
+        if (this.enemySpawnTime > Math.random() * 10000 + 5000 + this.enemyMaxSpawnTime) {
+            for (let i = 0; i < ((Math.random() * 10 + Math.floor(this.enemyNumber / 3))); i++) {
                 const enemy = new Enemy();
                 this.world.addChild(enemy);
                 this.enemies.push(enemy);
             }
-
-            this.elapsedTime = 0;
-            this.spawnTime *= 0.95;
+            this.enemySpawnTime = 0;
+            this.enemyMaxSpawnTime *= 0.97;
+            this.enemyNumber++;
         }
 
         for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -122,9 +170,9 @@ export class Scene1 extends Container implements IScene {
                 this.gameover = true;
                 const gameover = new GameOver();
                 this.addChild(gameover);
+                Player.SHOOT_STYLE = "normal";
+                Player.SHOOT_DELAY = Player.NORMAL_SHOOT_DELAY;
             }
-
-
         }
 
 
@@ -133,23 +181,39 @@ export class Scene1 extends Container implements IScene {
         // SHOOTING
         if (this.canShoot && !this.gameover) {
 
-            this.canShoot = false;
             setTimeout(() => { this.canShoot = true }, Player.SHOOT_DELAY);
-            const shot = new Shot(0);
-            shot.position.set(Scene1.player.x, Scene1.player.y - 20);
-            this.world.addChild(shot);
-            this.shots.push(shot);
+            this.canShoot = false;
 
-            const shotL = new Shot(-200);
-            shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
-            this.world.addChild(shotL);
-            this.shots.push(shotL);
+            if (Player.SHOOT_STYLE == "normal" || Player.SHOOT_STYLE == "triple") {
+                const shot = new Shot(0);
+                shot.position.set(Scene1.player.x, Scene1.player.y - 20);
+                this.world.addChild(shot);
+                this.shots.push(shot);
+            }
 
+            if (Player.SHOOT_STYLE == "double") {
+                const shotL = new Shot(-100);
+                shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
+                this.world.addChild(shotL);
+                this.shots.push(shotL);
 
-            const shotR = new Shot(200);
-            shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
-            this.world.addChild(shotR);
-            this.shots.push(shotR);
+                const shotR = new Shot(100);
+                shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
+                this.world.addChild(shotR);
+                this.shots.push(shotR);
+            }
+
+            if (Player.SHOOT_STYLE == "triple") {
+                const shotL = new Shot(-200);
+                shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
+                this.world.addChild(shotL);
+                this.shots.push(shotL);
+
+                const shotR = new Shot(200);
+                shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
+                this.world.addChild(shotR);
+                this.shots.push(shotR);
+            }
 
         }
 
@@ -167,7 +231,7 @@ export class Scene1 extends Container implements IScene {
             for (let j = this.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.enemies[j];
                 if (checkCollision(enemy, shot)) {
-                    sound.play("EnemyKilled", { volume: 0.4, singleInstance: true })
+                    sound.play("EnemyKilled", { volume: 0.5, singleInstance: true })
 
                     // Elimina el disparo y el enemigo
                     this.shots.splice(i, 1);

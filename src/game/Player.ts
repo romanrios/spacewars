@@ -5,9 +5,11 @@ import { IHitbox } from "./IHitbox";
 import { StateAnimation } from "./StateAnimation";
 
 export class Player extends PhysicsContainer implements IHitbox {
-    
+
     public static readonly MOVE_SPEED = 350;
-    public static SHOOT_DELAY: number = 300;
+    public static NORMAL_SHOOT_DELAY: number = 500;
+    public static SHOOT_DELAY: number = Player.NORMAL_SHOOT_DELAY;
+    public static SHOOT_STYLE: string = "normal";
 
     private shipAnimated: StateAnimation;
     private hitbox: Graphics;
@@ -81,7 +83,7 @@ export class Player extends PhysicsContainer implements IHitbox {
         });
 
 
-       
+
 
 
     }

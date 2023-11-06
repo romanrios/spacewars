@@ -1,40 +1,54 @@
 import { Container, Rectangle, Sprite } from "pixi.js";
 import { IHitbox } from "./IHitbox";
 import { Tween } from "tweedle.js";
+import { Player } from "./Player";
 
 export class Item extends Container implements IHitbox {
 
-    collision = false;
+    tween: Tween<this>;
+    id: number;
+    tween2: Tween<this>;
 
-    constructor() {
+    constructor(id: number) {
 
         super();
 
-        const botones = ["boton1.png", "boton2.png", "boton3.png", "boton4.png", "boton5.png", "boton6.png"];
+        this.id = id;
 
-        const boton = Sprite.from(botones[Math.floor(Math.random() * 5.99)])
-        boton.anchor.set(0.5);
+        if (id <= 6) {
+            const itemSprite = Sprite.from("speed.png");
+            itemSprite.anchor.set(0.5);
+            this.addChild(itemSprite);
+        } else {
+            if (Player.SHOOT_STYLE == "normal") {
+                const itemSprite = Sprite.from("two.png");
+                itemSprite.anchor.set(0.5);
+                this.addChild(itemSprite);
+            } else if (Player.SHOOT_STYLE == "double") {
+                const itemSprite = Sprite.from("three.png");
+                itemSprite.anchor.set(0.5);
+                this.addChild(itemSprite);
+            } else {
+                const itemSprite = Sprite.from("speed.png");
+                itemSprite.anchor.set(0.5);
+                this.addChild(itemSprite);
+            }
+        }
 
-        this.addChild(boton);
+        this.scale.set(6);
+        this.x = Math.random() * 600 + 50;
+        this.y = -50;
 
-        new Tween(boton)
-            .to({ angle: 360 }, 3000)
+        this.tween = new Tween(this)
+            .to({ y: this.y + 1400 }, 4000)
             .start()
-            .repeat(Infinity);
 
-        new Tween(boton)
-            .to({ y: boton.y - 50 }, Math.random()*1000+2000)
+        this.tween2 = new Tween(this)
+            .to({ scale: { x: 8, y: 8 } }, 300)
             .start()
             .yoyo(true)
             .repeat(Infinity)
-
-
-
-
     }
-
-
-
 
     public getHitbox(): Rectangle {
         return this.getBounds()
