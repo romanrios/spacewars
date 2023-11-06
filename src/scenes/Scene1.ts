@@ -18,7 +18,7 @@ export class Scene1 extends Container implements IScene {
 
     private enemyNumber: number = 0;
     private enemySpawnTime: number = 0;
-    private enemyMaxSpawnTime: number = 7000;
+    private enemyMaxSpawnTime: number = 5000;
     private itemSpawnTime: number = 0;
     private enemies: Enemy[] = [];
     private shots: Shot[] = [];
@@ -29,6 +29,7 @@ export class Scene1 extends Container implements IScene {
     private isDragging: boolean = false;
     private score: ScoreUI;
     private world: Container;
+    private midEnemy: boolean = true;
 
     constructor() {
         super();
@@ -100,7 +101,7 @@ export class Scene1 extends Container implements IScene {
 
 
         //ITEMS
-        if (this.itemSpawnTime > Math.random() * 20000 + 13000) {
+        if (this.itemSpawnTime > Math.random() * 30000 + 15000) {
             const item = new Item(Math.random() * 6 + 1);
             this.world.addChild(item);
             this.items.push(item);
@@ -122,15 +123,15 @@ export class Scene1 extends Container implements IScene {
                 item.tween2.stop();
                 item.destroy();
                 if (item.id <= 6) {
-                    Player.SHOOT_DELAY *= 0.95;
+                    Player.SHOOT_DELAY *= 0.97;
                 } else if (Player.SHOOT_STYLE == "normal") {
                     Player.SHOOT_STYLE = "double";
-                    Player.SHOOT_DELAY /= 0.9;
+                    Player.SHOOT_DELAY /= 0.7;
                 } else if (Player.SHOOT_STYLE == "double") {
                     Player.SHOOT_STYLE = "triple";
-                    Player.SHOOT_DELAY /= 0.9;
+                    Player.SHOOT_DELAY /= 0.7;
                 } else {
-                    Player.SHOOT_DELAY *= 0.9;
+                    Player.SHOOT_DELAY *= 0.97;
                 }
             }
 
@@ -142,7 +143,14 @@ export class Scene1 extends Container implements IScene {
 
 
         // ENEMIES
-        if (this.enemySpawnTime > Math.random() * 10000 + 5000 + this.enemyMaxSpawnTime) {
+        if (this.enemySpawnTime > this.enemyMaxSpawnTime / 2 && this.midEnemy) {
+            const enemy = new Enemy();
+            this.world.addChild(enemy);
+            this.enemies.push(enemy);
+            this.midEnemy = false;
+        }
+
+        if (this.enemySpawnTime > Math.random() * 8000 + 2000 + this.enemyMaxSpawnTime) {
             for (let i = 0; i < ((Math.random() * 10 + Math.floor(this.enemyNumber / 3))); i++) {
                 const enemy = new Enemy();
                 this.world.addChild(enemy);
@@ -151,6 +159,7 @@ export class Scene1 extends Container implements IScene {
             this.enemySpawnTime = 0;
             this.enemyMaxSpawnTime *= 0.97;
             this.enemyNumber++;
+            this.midEnemy = true;
         }
 
         for (let i = this.enemies.length - 1; i >= 0; i--) {
