@@ -11,6 +11,7 @@ import { sound } from "@pixi/sound";
 import { Item } from "../game/Item";
 import { Background } from "../game/Background";
 import { Easing, Tween } from "tweedle.js";
+import { Explosion } from "../game/Explosion";
 
 
 export class Scene1 extends Container implements IScene {
@@ -253,7 +254,12 @@ export class Scene1 extends Container implements IScene {
             for (let j = this.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.enemies[j];
                 if (checkCollision(enemy, shot)) {
+
                     sound.play("EnemyKilled", { volume: 0.6, singleInstance: true })
+                    const explosion = new Explosion();
+                    explosion.x = enemy.x;
+                    explosion.y = enemy.y;
+                    this.addChild(explosion);
 
                     // Elimina el disparo y el enemigo
                     this.shots.splice(i, 1);
