@@ -1,6 +1,6 @@
 import { Container, Rectangle, Sprite } from "pixi.js";
 import { IHitbox } from "./IHitbox";
-import { Tween } from "tweedle.js";
+import { Easing, Tween } from "tweedle.js";
 import { Player } from "./Player";
 
 export class Item extends Container implements IHitbox {
@@ -36,7 +36,7 @@ export class Item extends Container implements IHitbox {
         }
 
         this.scale.set(6);
-        this.x = Math.random() * 600 + 50;
+        this.x = Math.random() * 580 + 80;
         this.y = -50;
 
         this.tween = new Tween(this)
@@ -44,9 +44,10 @@ export class Item extends Container implements IHitbox {
             .start()
 
         this.tween2 = new Tween(this)
-            .to({ scale: { x: 8, y: 8 } }, 300)
+            .to({ x: this.x - 50 }, 800)
             .start()
             .yoyo(true)
+            .easing(Easing.Quartic.Out)
             .repeat(Infinity)
     }
 

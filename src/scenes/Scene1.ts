@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -9,12 +9,17 @@ import { GameOver } from "../UI/GameOver";
 import { ScoreUI } from "../UI/ScoreUI";
 import { sound } from "@pixi/sound";
 import { Item } from "../game/Item";
+import { Background } from "../game/Background";
+import { Easing, Tween } from "tweedle.js";
 
 
 export class Scene1 extends Container implements IScene {
-    public static player: Player;
 
-    private bgContainer: Container;
+    private background: Background;
+    private background1: Background;
+    private background2: Background;
+
+    public static player: Player;
 
     private enemyNumber: number = 0;
     private enemySpawnTime: number = 0;
@@ -40,31 +45,33 @@ export class Scene1 extends Container implements IScene {
         this.world = new Container();
         this.addChild(this.world);
 
-        const bgTexture = Texture.from("./background.png");
-        this.bgContainer = new Container();
-        this.world.addChild(this.bgContainer);
+        this.background = new Background("background.png");
+        this.world.addChild(this.background)
 
-        const background = Sprite.from(bgTexture)
-        background.width = Manager.width;
-        background.height = Manager.height;
-        this.bgContainer.addChild(background);
+        this.background1 = new Background("background1.png");
+        this.world.addChild(this.background1)
 
-        const background2 = Sprite.from(bgTexture)
-        background2.width = Manager.width;
-        background2.height = Manager.height;
-        background2.y = -1280;
-        this.bgContainer.addChild(background2);
+        this.background2 = new Background("background2.png");
+        this.world.addChild(this.background2)
+
+
 
         Scene1.player = new Player();
-        Scene1.player.position.set(Manager.width / 2, Manager.height - 50)
+        Scene1.player.position.set(Manager.width / 2, Manager.height + 200)
         Scene1.player.scale.set(6);
         this.world.addChild(Scene1.player);
+
+        new Tween(Scene1.player)
+            .to({ y: 1100 }, 600)
+            .start()
+            .easing(Easing.Quadratic.Out)
+            .onComplete(() => { this.eventMode = "static" })
 
         this.score = new ScoreUI();
         this.addChild(this.score);
 
         // for touch control
-        this.eventMode = "static";
+
 
         // TOUCH CONTROL
         this.on('pointerdown', () => {
@@ -95,8 +102,14 @@ export class Scene1 extends Container implements IScene {
         this.enemySpawnTime += _deltaTime;
         Scene1.player.update(_deltaTime);
 
-        this.bgContainer.y += _deltaTime * 0.3;
-        this.bgContainer.y %= Manager.height;
+        this.background.y += _deltaTime * 0.3;
+        this.background.y %= Manager.height;
+
+        this.background1.y += _deltaTime * 0.35;
+        this.background1.y %= Manager.height;
+
+        this.background2.y += _deltaTime * 0.4;
+        this.background2.y %= Manager.height;
 
 
 

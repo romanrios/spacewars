@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@pixi/sound": "^5.2.0",
+    "@pixi/ui": "^0.10.0",
+    "firebase": "^10.5.2",
     "pixi.js": "^7.2.4",
     "tweedle.js": "^2.1.0"
   },

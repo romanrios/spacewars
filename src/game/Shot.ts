@@ -27,7 +27,7 @@ export class Shot extends PhysicsContainer implements IHitbox {
         this.addChild(this.hitbox);
 
         this.tween = new Tween(this)
-            .to({ x: Scene1.player.x + spread, y: this.y - 1290 }, 2000)
+            .to({ x: Scene1.player.x + spread, y: this.y - 1500 }, 2200)
             .start()
     }
 
