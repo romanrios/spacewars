@@ -7,6 +7,7 @@ import { sound } from "@pixi/sound";
 import { Background } from "../game/Background";
 import { Tween } from "tweedle.js";
 import { Button } from "../UI/Button";
+import { TitleText } from "../UI/TitleText";
 
 
 export class SceneTitle extends Container implements IScene {
@@ -31,6 +32,11 @@ export class SceneTitle extends Container implements IScene {
 
         this.background2 = new Background("background2.png");
         this.addChild(this.background2)
+
+        const text = new Text("HIGH-SCORE\n12300", { fontFamily: "PressStart2P", fontSize: 25, align: "center", fill: 0xFFFFFF, lineHeight: 35 });
+        text.anchor.set(0.5)
+        text.position.set(Manager.width / 2, 70);
+        this.addChild(text);
 
         const fullscreen = new Button("fullscreen.png", () => {
             if (!document.fullscreenElement) {
@@ -70,12 +76,21 @@ export class SceneTitle extends Container implements IScene {
             unmuted.visible = false;
         }
 
-        const textTitle = new Text("", { fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: 0xFFFFFF });
-        textTitle.anchor.set(0.5)
-        textTitle.position.set(Manager.width / 2, Manager.height / 2);
-        this.addChild(textTitle);
+        const createText = (random: boolean) => {
+            const textTitle = new TitleText(random);
+            textTitle.eventMode = "static";
+            textTitle.on("pointerup", () => {
+                this.removeChild(textTitle);
+                textTitle.destroy();
+                createText(true);
+            })
+            this.addChild(textTitle);
+        }
+        createText(false);
 
-        this.animateText(textTitle);
+
+
+
 
         const textPlay = new Text("[ PL4Y ]", { fontFamily: "PressStart2P", fontSize: 30, align: "center", fill: 0xFFFFFF });
         textPlay.anchor.set(0.5)
@@ -142,42 +157,7 @@ export class SceneTitle extends Container implements IScene {
     }
 
 
-    private async updateTextWithDelay(text: Text, newText: string, delay: number): Promise<void> {
-        return new Promise((resolve) => {
-            new Tween(text)
-                .to({}, delay)
-                .start()
-                .onComplete(() => {
-                    text.text = newText;
-                    resolve();
-                });
-        });
-    }
 
-    private async animateText(text: Text) {
-        await this.updateTextWithDelay(text, "S", 100);
-        await this.updateTextWithDelay(text, "SP", 100);
-        await this.updateTextWithDelay(text, "SPC", 100);
-        await this.updateTextWithDelay(text, "SPC\nW", 100);
-        await this.updateTextWithDelay(text, "SPC\nWR", 100);
-        await this.updateTextWithDelay(text, "SPC\nWRS", 100);
-        await this.updateTextWithDelay(text, "SP C\nWRS", 100);
-        await this.updateTextWithDelay(text, "SP C \nWRS", 100);
-        await this.updateTextWithDelay(text, "SP C \nW RS", 100);
-        await this.updateTextWithDelay(text, "SP0C \nW RS", 100);
-        await this.updateTextWithDelay(text, "SP1C \nW RS", 100);
-        await this.updateTextWithDelay(text, "SP2C \nW RS", 100);
-        await this.updateTextWithDelay(text, "SP3C \nW RS", 100);
-        await this.updateTextWithDelay(text, "SP4C0\nW RS", 100);
-        await this.updateTextWithDelay(text, "SP0C1\nW RS", 100);
-        await this.updateTextWithDelay(text, "SP1C2\nW RS", 100);
-        await this.updateTextWithDelay(text, "SP2C3\nW RS", 100);
-        await this.updateTextWithDelay(text, "SP3C3\nW0RS", 100);
-        await this.updateTextWithDelay(text, "SP4C3\nW1RS", 100);
-        await this.updateTextWithDelay(text, "SP4C3\nW2RS", 100);
-        await this.updateTextWithDelay(text, "SP4C3\nW3RS", 100);
-        await this.updateTextWithDelay(text, "SP4C3\nW4RS", 100);
-    }
 
 
 

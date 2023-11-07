@@ -15,12 +15,13 @@ import { Easing, Tween } from "tweedle.js";
 
 export class Scene1 extends Container implements IScene {
 
+
+    public static player: Player;
+    public static score: ScoreUI;
+
     private background: Background;
     private background1: Background;
     private background2: Background;
-
-    public static player: Player;
-
     private enemyNumber: number = 0;
     private enemySpawnTime: number = 0;
     private enemyMaxSpawnTime: number = 5000;
@@ -30,9 +31,7 @@ export class Scene1 extends Container implements IScene {
     private items: Item[] = [];
     private canShoot: boolean = true;
     private gameover: boolean = false;
-
     private isDragging: boolean = false;
-    private score: ScoreUI;
     private world: Container;
     private midEnemy: boolean = true;
 
@@ -67,8 +66,8 @@ export class Scene1 extends Container implements IScene {
             .easing(Easing.Quadratic.Out)
             .onComplete(() => { this.eventMode = "static" })
 
-        this.score = new ScoreUI();
-        this.addChild(this.score);
+        Scene1.score = new ScoreUI();
+        this.addChild(Scene1.score);
 
         // for touch control
 
@@ -186,6 +185,7 @@ export class Scene1 extends Container implements IScene {
 
             // GAME OVER
             if (checkCollision(enemy, Scene1.player) && !this.gameover) {
+                this.removeChild(Scene1.score);
                 sound.stopAll();
                 sound.play("GameOver", { volume: 0.6, singleInstance: true });
                 this.world.removeChild(Scene1.player);
@@ -268,8 +268,8 @@ export class Scene1 extends Container implements IScene {
                     enemy.destroy();
 
                     //SCORE
-                    this.score.score += 100;
-                    this.score.text.text = "SCORE " + String(this.score.score);
+                    Scene1.score.score += 100;
+                    Scene1.score.text.text = "SCORE " + String(Scene1.score.score);
 
                     // Sale del bucle interno ya que el disparo colisionó con un enemigo
                     break;
