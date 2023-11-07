@@ -1,16 +1,15 @@
-import { Container, Text, Sprite } from "pixi.js";
+import { Container, Text } from "pixi.js";
 import { getDatabase, ref, orderByChild, onValue, query } from 'firebase/database';
+import { Manager } from "../utils/Manager";
+import { SceneTitle } from "../scenes/SceneTitle";
+import { Easing, Tween } from "tweedle.js";
 
 export class HighScore extends Container {
     private scoresArray: any;
-    private board: Sprite;
     private tablaPuntuaciones: any;
 
     constructor() {
         super()
-
-        this.board = Sprite.from("board.png");
-        this.addChild(this.board);
 
         // Obtiene una referencia a la ubicación de los puntajes
         const database = getDatabase();
@@ -33,7 +32,7 @@ export class HighScore extends Container {
             }
 
             this.scoresArray.sort((a: any, b: any) => Number(b.puntaje) - Number(a.puntaje));
-            this.scoresArray = this.scoresArray.slice(0, 10);
+            this.scoresArray = this.scoresArray.slice(0, 20);
             // Arreglos para almacenar nombres y puntuaciones
 
             if (this.tablaPuntuaciones) {
@@ -41,35 +40,66 @@ export class HighScore extends Container {
             }
 
             this.tablaPuntuaciones = new Container();
-            const espaciadoVertical = 39.6;
+            const espaciadoVertical = 50;
             const marginTop = 27;
+            const fontSize = 22;
 
             this.scoresArray.forEach((puntuacion: any, indice: any) => {
+                const color = this.randomColor()
+
                 const filaNombres = new Text(
                     `${indice + 1}. ${puntuacion.nombre}`, {
                     fontFamily: "PressStart2P",
-                    fontSize: 15,
-                    fill: 0x4d4d4d,
+                    fontSize: fontSize,
+                    fill: color,
                 });
-                filaNombres.position.set(-10, indice * espaciadoVertical + marginTop);
+                filaNombres.position.set(0, indice * espaciadoVertical + marginTop);
 
                 const filaPuntos = new Text(
                     `${puntuacion.puntaje}`, {
                     fontFamily: "PressStart2P",
-                    fontSize: 15,
-                    fill: 0x4d4d4d,
+                    fontSize: fontSize,
+                    fill: color,
                 });
 
                 filaPuntos.anchor.x = 1;
-                filaPuntos.position.set(250, indice * espaciadoVertical + marginTop)
+                filaPuntos.position.set(505, indice * espaciadoVertical + marginTop)
 
-                this.tablaPuntuaciones.addChild(filaNombres);
-                this.tablaPuntuaciones.addChild(filaPuntos);
+                const filaContainer = new Container();
+                filaContainer.addChild(filaNombres);
+                filaContainer.addChild(filaPuntos);
+                this.tablaPuntuaciones.addChild(filaContainer);
+
+                new Tween(filaContainer)
+                    .to({ x: Math.random() * (-30) + 15 }, 1000)
+                    .start()
+                    .yoyo(true)
+                    .easing(Easing.Quadratic.Out)
+                    .repeat(Infinity)
+
+
+
+
             });
 
-            this.tablaPuntuaciones.position.set(95, 155);
+            this.tablaPuntuaciones.position.set(110, 230);
             this.addChild(this.tablaPuntuaciones);
 
+            const textHighScores = new Text("HIGH\nSCORES", { fontFamily: "PressStart2P", fontSize: 45, align: "center", fill: 0xFFFFFF, lineHeight: 55 });
+            textHighScores.anchor.set(0.5)
+            textHighScores.position.set(Manager.width / 2, 140);
+            this.addChild(textHighScores);
+
+            SceneTitle.highestScore.text = "HIGH SCORE\n" + String(this.scoresArray[0].nombre) + "\n" + String(this.scoresArray[0].puntaje);
+
         });
+
+    }
+
+
+    private randomColor() {
+        const resultados = ["0x0bffe6", "0xffd080", "0xff9e7d", "0xfe546f", "0xfffdff", "0x01cbcf"];
+        const indiceAleatorio = Math.floor(Math.random() * resultados.length);
+        return resultados[indiceAleatorio];
     }
 }

@@ -39,7 +39,7 @@ export class Scene1 extends Container implements IScene {
         super();
 
         sound.stopAll();
-        sound.play("SongLevel", { volume: 0.6, loop: true, singleInstance: true });
+        sound.play("SongLevel", { volume: 0.3, loop: true, singleInstance: true });
 
         this.world = new Container();
         this.addChild(this.world);
@@ -253,7 +253,7 @@ export class Scene1 extends Container implements IScene {
             for (let j = this.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.enemies[j];
                 if (checkCollision(enemy, shot)) {
-                    sound.play("EnemyKilled", { volume: 0.5, singleInstance: true })
+                    sound.play("EnemyKilled", { volume: 0.6, singleInstance: true })
 
                     // Elimina el disparo y el enemigo
                     this.shots.splice(i, 1);

@@ -6,6 +6,8 @@ export const manifest: ResolverManifest = {
             name: "mainScene",
             assets:
             {
+                Font: "PressStart2P.ttf",
+
                 SongTitle: "naves_song_title.mp3",
                 SongLevel: "naves_song_level.mp3",
                 GameOver: "gameover.mp3",
@@ -29,8 +31,9 @@ export const manifest: ResolverManifest = {
                 Fullscreen: "fullscreen.png",
                 Muted: "muted.png",
                 Unmuted: "unmuted.png",
-
-                Font: "PressStart2P.ttf",
+                Back: "back.png",
+                Ok: "ok.png",
+                Highscore: "highscore.png",
 
 
 

@@ -34,9 +34,9 @@ export class LoaderScene extends Container implements IScene {
         this.loaderBar.position.y = (Manager.height - this.loaderBar.height) / 2;
         this.addChild(this.loaderBar);
 
-        this.texty = new Text("", {fontSize:30, fill:0xFFFFFF});
+        this.texty = new Text("", { fontSize: 30, fill: 0xFFFFFF });
         this.texty.anchor.set(0.5);
-        this.texty.position.set(Manager.width/2,Manager.height/2);
+        this.texty.position.set(Manager.width / 2, Manager.height / 2);
         this.addChild(this.texty)
 
         this.initializeLoader().then(() => {
@@ -46,10 +46,9 @@ export class LoaderScene extends Container implements IScene {
 
 
 
-    private async initializeLoader(): Promise<void>
-    {
+    private async initializeLoader(): Promise<void> {
         await Assets.init({ manifest: manifest });
-        const bundleIds =  manifest.bundles.map(bundle => bundle.name);
+        const bundleIds = manifest.bundles.map(bundle => bundle.name);
         await Assets.loadBundle(bundleIds, this.downloadProgress.bind(this));
     }
 
@@ -63,11 +62,11 @@ export class LoaderScene extends Container implements IScene {
 
     private gameLoaded(): void {
         // Change scene to the game scene!
-        Manager.changeScene(new SceneTitle());
+        Manager.changeScene(new SceneTitle(false));
     }
 
 
-    
+
     public update(_framesPassed: number): void {
         // To be a scene we must have the update method even if we don't use it.
     }
