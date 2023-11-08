@@ -54,7 +54,7 @@ export class GameOver extends Container {
         // HIGHSCORE
 
         this.input = new Input({
-            maxLength: 15,
+            // maxLength: 15,
             placeholder: "Enter your name",
             align: "center",
             bg: new Graphics()
@@ -63,7 +63,7 @@ export class GameOver extends Container {
                 .drawRect(0, 0, 500, 70),
             textStyle: {
                 fill: 0xFFFFFF,
-                fontSize: 30,
+                fontSize: 25,
                 fontFamily: "PressStart2P",
 
             },
@@ -83,13 +83,13 @@ export class GameOver extends Container {
                     this.buttonOk.alpha = 1;
                     this.buttonOk.eventMode = "static";
                     this.buttonOk.cursor = "pointer";
-                    const uppercaseText = this.input.value.toUpperCase();
+                    // const uppercaseText = this.input.value.toUpperCase();
 
                     // if (uppercaseText.length > 15) {
                         // Recortar el string a 15 caracteres
                         // uppercaseText = uppercaseText.slice(0, 15);
                     // }
-                    this.input.value = uppercaseText;
+                    // this.input.value = uppercaseText;
 
                 }
             }
