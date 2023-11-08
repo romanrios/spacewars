@@ -51,11 +51,9 @@ export class Player extends PhysicsContainer implements IHitbox {
 
         if (Keyboard.state.get("ArrowRight")) {
             this.speed.x = Player.MOVE_SPEED;
-            this.shipAnimated.playState("right", true);
 
         } else if (Keyboard.state.get("ArrowLeft")) {
             this.speed.x = -Player.MOVE_SPEED;
-            this.shipAnimated.playState("left", true);
 
         }
 
@@ -67,7 +65,6 @@ export class Player extends PhysicsContainer implements IHitbox {
 
 
         Keyboard.up.on("ArrowLeft", () => {
-            this.resetSpeedandAnimation();
         });
 
         Keyboard.up.on("ArrowRight", () => {
@@ -82,17 +79,20 @@ export class Player extends PhysicsContainer implements IHitbox {
             this.resetSpeedandAnimation();
         });
 
-
-
-
-
+        if (this.speed.x > 0) {
+            this.shipAnimated.playState("right", true);
+        } else if (this.speed.x < 0) {
+            this.shipAnimated.playState("left", true);
+        } else {
+            this.shipAnimated.playState("idle", true);
+        }
     }
+
 
 
     private resetSpeedandAnimation(): void {
         this.speed.x = 0;
         this.speed.y = 0;
-        this.shipAnimated.playState("idle", true);
     }
 
     public getHitbox(): Rectangle {

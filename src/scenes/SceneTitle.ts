@@ -191,7 +191,7 @@ export class SceneTitle extends Container implements IScene {
 
         // ENEMIES
         if (this.elapsedTime > Math.random() * 2000 + 1000) {
-            const enemy = new Enemy();
+            const enemy = new Enemy("enemy");
             enemy.x = Math.random() * 680 + 20;
             this.containerBack.addChild(enemy);
             this.enemies.push(enemy);
