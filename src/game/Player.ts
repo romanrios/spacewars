@@ -65,6 +65,7 @@ export class Player extends PhysicsContainer implements IHitbox {
 
 
         Keyboard.up.on("ArrowLeft", () => {
+            this.resetSpeedandAnimation();
         });
 
         Keyboard.up.on("ArrowRight", () => {
