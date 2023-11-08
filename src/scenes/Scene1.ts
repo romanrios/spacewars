@@ -231,6 +231,14 @@ export class Scene1 extends Container implements IScene {
 
             // GAME OVER
             if (checkCollision(enemy, Scene1.player) && !this.gameover) {
+
+                for (let i = 0; i < 15; i++) {
+                    const explosionGameOver = new Explosion();
+                    explosionGameOver.x = Scene1.player.x + i * Math.random() * (-20) + 20;
+                    explosionGameOver.y = Scene1.player.y + i * Math.random() * (-20) + 20;
+                    Scene1.world.addChild(explosionGameOver);
+                }
+
                 this.removeChild(Scene1.score);
                 sound.stopAll();
                 sound.play("GameOver", { volume: 0.6, singleInstance: true });
