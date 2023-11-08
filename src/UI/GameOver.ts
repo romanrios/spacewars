@@ -58,11 +58,11 @@ export class GameOver extends Container {
             placeholder: "Enter your name",
             align: "center",
             bg: new Graphics()
-                .beginFill(0xFFFFFF, 0.0001)
+                .beginFill(0xFFFFFF)
                 .lineStyle(3, 0xFFFFFF)
-                .drawRect(0, 0, 500, 70),
+                .drawRoundedRect(0, 0, 350, 50, 25),
             textStyle: {
-                fill: 0xFFFFFF,
+                fill: 0x4D4D4D,
                 fontSize: 25,
                 fontFamily: "PressStart2P",
 
