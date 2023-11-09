@@ -3,6 +3,7 @@ import { PhysicsContainer } from "../utils/PhysicsContainer";
 import { IHitbox } from "./IHitbox";
 import { Tween } from "tweedle.js";
 import { Scene1 } from "../scenes/Scene1";
+import { sound } from "@pixi/sound";
 
 export class Enemy extends PhysicsContainer implements IHitbox {
 
@@ -69,11 +70,11 @@ export class Enemy extends PhysicsContainer implements IHitbox {
 
         if (this.type == "enemy" && this.shootCooldown > Math.random() * 1500 + 1000 && this.canShoot) {
             {
-
+                sound.play("Pew", { volume: 0.3, singleInstance: true });
                 const enemyShot = new Enemy("enemy_shot");
                 Scene1.world.addChild(enemyShot);
-                enemyShot.x = this.x + 4*6;
-                enemyShot.y = this.y + 8*6;
+                enemyShot.x = this.x + 4 * 6;
+                enemyShot.y = this.y + 8 * 6;
                 Scene1.enemies.push(enemyShot);
                 this.shootCooldown = 0;
                 enemyShot.tween = new Tween(enemyShot)

@@ -42,9 +42,9 @@ export class SceneTitle extends Container implements IScene {
         const containerFront = new Container();
         this.addChild(containerFront);
 
-        SceneTitle.highestScore = new Text("HIGH SCORE\n", { fontFamily: "PressStart2P", fontSize: 20, align: "center", fill: this.randomColor(), lineHeight: 35 });
+        SceneTitle.highestScore = new Text("HIGH SCORE\n", { fontFamily: "PressStart2P", fontSize: 20, align: "center", fill: "0xFFFFFF", lineHeight: 30 });
         SceneTitle.highestScore.anchor.x = 0.5;
-        SceneTitle.highestScore.alpha = 0.8;
+        SceneTitle.highestScore.alpha = 0.5;
         SceneTitle.highestScore.position.set(Manager.width / 2, 25);
         containerFront.addChild(SceneTitle.highestScore);
 
@@ -59,7 +59,7 @@ export class SceneTitle extends Container implements IScene {
 
         });
         buttonHighscore.scale.set(5);
-        buttonHighscore.position.set(600, 30);
+        buttonHighscore.position.set(645, 70);
         containerFront.addChild(buttonHighscore);
 
         const buttonBack = new Button("back.png", () => {
@@ -68,7 +68,7 @@ export class SceneTitle extends Container implements IScene {
             highscore.visible = false;
         });
         buttonBack.scale.set(5);
-        buttonBack.position.set(600, 30);
+        buttonBack.position.set(645, 70);
         buttonBack.visible = false;
         this.addChild(buttonBack);
 
@@ -92,7 +92,7 @@ export class SceneTitle extends Container implements IScene {
                 }
             }
         });
-        fullscreen.position.set(270, 1030);
+        fullscreen.position.set(300, 1060);
         containerFront.addChild(fullscreen);
 
         const unmuted = new Button("unmuted.png", () => {
@@ -101,7 +101,7 @@ export class SceneTitle extends Container implements IScene {
             muted.visible = true;
             unmuted.visible = false;
         });
-        unmuted.position.set(385, 1030);
+        unmuted.position.set(416, 1060);
         containerFront.addChild(unmuted);
 
         const muted = new Button("muted.png", () => {
@@ -111,7 +111,7 @@ export class SceneTitle extends Container implements IScene {
             unmuted.visible = true;
         });
         muted.visible = false;
-        muted.position.set(385, 1030);
+        muted.position.set(416, 1060);
         containerFront.addChild(muted);
 
         if (Manager.muted) {
@@ -208,18 +208,8 @@ export class SceneTitle extends Container implements IScene {
             }
         }
 
-
-
     }
 
-
-
-
-    private randomColor() {
-        const resultados = ["0x0bffe6", "0xffd080", "0xff9e7d", "0xfe546f", "0xfffdff", "0x01cbcf"];
-        const indiceAleatorio = Math.floor(Math.random() * resultados.length);
-        return resultados[indiceAleatorio];
-    }
 
 
 

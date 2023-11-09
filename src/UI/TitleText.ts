@@ -5,6 +5,8 @@ import { Manager } from "../utils/Manager";
 
 
 export class TitleText extends Container {
+    private textTitle: Text;
+    private randomColor: string;
 
     constructor(random: boolean) {
         super();
@@ -16,14 +18,19 @@ export class TitleText extends Container {
             } else { return "0x0bffe6" }
         }
 
-        const textTitle = new Text("", { fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: randomColor() });
-        textTitle.anchor.set(0.5)
-        textTitle.position.set(Manager.width / 2, Manager.height / 2);
-        textTitle.eventMode = "static";
-        textTitle.cursor = "pointer";
-        this.addChild(textTitle);
+        this.randomColor = randomColor()
 
-        this.animateText(textTitle);
+
+        this.textTitle = new Text("", { fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: this.randomColor });
+        this.textTitle.anchor.set(0.5)
+        this.textTitle.position.set(Manager.width / 2, Manager.height / 2);
+        this.textTitle.eventMode = "static";
+        this.textTitle.cursor = "pointer";
+        this.textTitle.alpha = 0.6;
+
+        this.addChild(this.textTitle);
+
+        this.animateText(this.textTitle);
 
     }
 
@@ -39,6 +46,25 @@ export class TitleText extends Container {
                 });
         });
     }
+
+
+    private textStyling() {
+        this.textTitle.style =
+        {
+            "dropShadow": true,
+            "dropShadowAngle": 0,
+            "dropShadowAlpha": 0.4,
+            "dropShadowBlur": 13,
+            "dropShadowColor": this.randomColor,
+            "dropShadowDistance": 0,
+
+            fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: this.randomColor
+        }
+        this.textTitle.alpha = 1;
+    }
+
+
+
 
     private async animateText(text: Text) {
         await this.updateTextWithDelay(text, "S", 100);
@@ -63,5 +89,11 @@ export class TitleText extends Container {
         await this.updateTextWithDelay(text, "SP4C3\nW2RS", 100);
         await this.updateTextWithDelay(text, "SP4C3\nW3RS", 100);
         await this.updateTextWithDelay(text, "SP4C3\nW4RS", 100);
+        await this.updateTextWithDelay(text, "", 50);
+        await this.updateTextWithDelay(text, "SP4C3\nW4RS", 50);
+        await this.updateTextWithDelay(text, "", 50);
+        await this.updateTextWithDelay(text, "SP4C3\nW4RS", 50);
+        await this.textStyling();
+
     }
 }

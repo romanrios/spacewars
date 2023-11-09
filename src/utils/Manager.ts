@@ -4,6 +4,7 @@ import { Group } from "tweedle.js";
 
 export class Manager {
 
+    public static paused: boolean = false;
     public static muted: boolean = false;
 
     private constructor() { /*this class is purely static. No constructor to see here*/ }
@@ -86,8 +87,10 @@ export class Manager {
 
 
 
+
     // Call this function when you want to go to a new scene
     public static changeScene(newScene: IScene): void {
+
         // Remove and destroy old scene... if we had one..
         if (Manager.currentScene) {
             Manager.app.stage.removeChild(Manager.currentScene);
@@ -107,14 +110,19 @@ export class Manager {
     // This update will be called by a pixi ticker and tell the scene that a tick happened
     private static update(deltaFrame: number): void {
 
+        // PAUSE THE GAME!
+        if (!Manager.paused) {
+
         // Let the current scene know that we updated it...
         // Just for funzies, sanity check that it exists first.
-        if (Manager.currentScene) {
-            Manager.currentScene.update(Ticker.shared.deltaMS, deltaFrame);
-            Group.shared.update(); // for tweedle.js !! 
 
+            if (Manager.currentScene) {
+                Manager.currentScene.update(Ticker.shared.deltaMS, deltaFrame);
+                Group.shared.update(Ticker.shared.deltaMS,false); // for tweedle.js !! 
+
+            }
+            // as I said before, I HATE the "frame passed" approach. I would rather use `Manager.app.ticker.deltaMS`
         }
-        // as I said before, I HATE the "frame passed" approach. I would rather use `Manager.app.ticker.deltaMS`
     }
 }
 

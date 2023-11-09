@@ -7,6 +7,7 @@ export class Button extends Container {
         super();
 
         const sprite = Sprite.from(spriteString);
+        sprite.anchor.set(0.5);
         this.scale.set(4);
         this.addChild(sprite);
         this.alpha = 0.8;

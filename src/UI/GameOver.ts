@@ -1,14 +1,15 @@
-import { Container, Graphics, Sprite, Text } from "pixi.js";
+import { Container, Graphics, Text } from "pixi.js";
 import { Manager } from "../utils/Manager";
 import { SceneTitle } from "../scenes/SceneTitle";
 import { agregarPuntaje } from "../utils/firebaseConfig";
 import { Input } from "@pixi/ui";
 import { Scene1 } from "../scenes/Scene1";
+import { Button } from "./Button";
 
 export class GameOver extends Container {
 
     private input: Input;
-    private buttonOk: Sprite;
+    private buttonOk: Button;
 
     constructor() {
         super()
@@ -18,18 +19,18 @@ export class GameOver extends Container {
         text.position.set(Manager.width / 2, 480);
         this.addChild(text);
 
-
         const textScore = new Text("YOUR SCORE IS\n\n" + String(Scene1.score.score), { fontFamily: "PressStart2P", fontSize: 30, align: "center", fill: this.randomColor() });
         textScore.anchor.set(0.5)
         textScore.position.set(Manager.width / 2, 660);
         this.addChild(textScore);
 
-
-
-        this.buttonOk = Sprite.from("ok.png");
+        this.buttonOk = new Button("ok.png", () => {
+            agregarPuntaje(this.input.value, String(Scene1.score.score));
+            Manager.changeScene(new SceneTitle(true));
+        });
         this.buttonOk.scale.set(6);
-        this.buttonOk.anchor.set(0.5)
         this.buttonOk.position.set(Manager.width / 2 + 100, 950);
+        this.buttonOk.eventMode = "none";
         this.buttonOk.alpha = 0.3;
         this.buttonOk.on("pointerup", () => {
             agregarPuntaje(this.input.value, String(Scene1.score.score));
@@ -37,19 +38,10 @@ export class GameOver extends Container {
         })
         this.addChild(this.buttonOk);
 
-
-        const buttonBack = Sprite.from("back.png");
-        buttonBack.alpha = 0.8;
+        const buttonBack = new Button("back.png", () => { Manager.changeScene((new SceneTitle(false))) });
         buttonBack.scale.set(6);
-        buttonBack.anchor.set(0.5)
         buttonBack.position.set(Manager.width / 2 - 100, 950);
-        buttonBack.eventMode = "static";
-        buttonBack.cursor = "pointer";
-        buttonBack.on("pointerup", () => {
-            Manager.changeScene((new SceneTitle(false)));
-        })
         this.addChild(buttonBack);
-
 
         // HIGHSCORE
 

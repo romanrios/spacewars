@@ -13,6 +13,9 @@ export const manifest: ResolverManifest = {
                 GameOver: "gameover.mp3",
                 EnemyKilled: "enemy_killed.mp3",
                 Item: "item.mp3",
+                PauseStartSound: "pause_start.mp3",
+                PauseEndSound: "pause_end.mp3",
+                Pew: "pew.mp3",
 
                 Background: "background.png",
                 Background1: "background1.png",
@@ -34,6 +37,8 @@ export const manifest: ResolverManifest = {
                 Back: "back.png",
                 Ok: "ok.png",
                 Highscore: "highscore.png",
+                PauseStartIcon: "pause_start.png",
+                PauseEndIcon: "pause_end.png",
 
 
 

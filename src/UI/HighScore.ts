@@ -47,8 +47,10 @@ export class HighScore extends Container {
             this.scoresArray.forEach((puntuacion: any, indice: any) => {
                 const color = this.randomColor()
 
+                const nombreFormateado = this.formatName(puntuacion.nombre);
+
                 const filaNombres = new Text(
-                    `${indice + 1}. ${puntuacion.nombre}`, {
+                    `${indice + 1}. ${nombreFormateado}`, {
                     fontFamily: "PressStart2P",
                     fontSize: fontSize,
                     fill: color,
@@ -82,12 +84,12 @@ export class HighScore extends Container {
 
             });
 
-            this.tablaPuntuaciones.position.set(110, 230);
+            this.tablaPuntuaciones.position.set(110, 200);
             this.addChild(this.tablaPuntuaciones);
 
             const textHighScores = new Text("HIGH\nSCORES", { fontFamily: "PressStart2P", fontSize: 45, align: "center", fill: 0xFFFFFF, lineHeight: 55 });
             textHighScores.anchor.set(0.5)
-            textHighScores.position.set(Manager.width / 2, 140);
+            textHighScores.position.set(Manager.width / 2, 130);
             this.addChild(textHighScores);
 
             SceneTitle.highestScore.text = "HIGH SCORE\n" + String(this.scoresArray[0].nombre) + "\n" + String(this.scoresArray[0].puntaje);
@@ -102,4 +104,18 @@ export class HighScore extends Container {
         const indiceAleatorio = Math.floor(Math.random() * resultados.length);
         return resultados[indiceAleatorio];
     }
+
+
+
+    private formatName(nombre: string): string {
+    const maxLength = 15;
+    const currentLength = nombre.length;
+
+    if (currentLength < maxLength) {
+        const dots = ' '+ '.'.repeat(maxLength - currentLength - 1); // -1 para dejar espacio en lugar de un punto
+        return `${nombre}${dots}`;
+    } else {
+        return nombre.substring(0, maxLength); // Limita la longitud a 15 caracteres
+    }
+}
 }

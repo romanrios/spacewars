@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Container, Text } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -12,6 +12,8 @@ import { Item } from "../game/Item";
 import { Background } from "../game/Background";
 import { Easing, Tween } from "tweedle.js";
 import { Explosion } from "../game/Explosion";
+import { Button } from "../UI/Button";
+// import { SceneTitle } from "./SceneTitle";
 
 
 export class Scene1 extends Container implements IScene {
@@ -35,6 +37,10 @@ export class Scene1 extends Container implements IScene {
     private gameover: boolean = false;
     private isDragging: boolean = false;
     private midEnemy: boolean = true;
+    private buttonPauseStart: Button;
+    private buttonPauseEnd: Button;
+    private isOnPauseButton: boolean = false;
+    private textPause: any;
 
     constructor() {
         super();
@@ -53,6 +59,49 @@ export class Scene1 extends Container implements IScene {
 
         this.background2 = new Background("background2.png");
         Scene1.world.addChild(this.background2)
+
+        
+        // PAUSE GAME
+        this.textPause = new Text("GAME PAUSED", { fontFamily: "PressStart2P", fontSize: 25, align: "center", fill: 0xFFFFFF });
+        this.textPause.anchor.set(0.5)
+        this.textPause.position.set(Manager.width / 2, Manager.height / 2);
+        this.textPause.visible = false;
+        this.addChild(this.textPause);
+
+        this.buttonPauseStart = new Button("pause_start.png", () => {
+            Manager.paused = true;
+            sound.pause("SongLevel");
+            sound.play("PauseStartSound", { volume: 0.5, singleInstance: true });
+            this.buttonPauseStart.visible = false;
+            this.buttonPauseEnd.visible = true;
+            this.isOnPauseButton = true;
+            this.textPause.visible = true;
+        });
+        this.buttonPauseStart.on("pointerover", () => { this.isOnPauseButton = true })
+        this.buttonPauseStart.on("pointerout", () => { this.isOnPauseButton = false })
+        this.buttonPauseStart.scale.set(4);
+        this.buttonPauseStart.position.set(50, 50);
+        this.addChild(this.buttonPauseStart);
+
+        this.buttonPauseEnd = new Button("pause_end.png", () => {
+            sound.play("PauseEndSound", { volume: 0.5, singleInstance: true });
+            Manager.paused = false;
+            sound.resume("SongLevel");
+            this.buttonPauseStart.visible = true;
+            this.buttonPauseEnd.visible = false;
+            this.isOnPauseButton = true;
+            this.textPause.visible = false;
+        });
+        this.buttonPauseEnd.on("pointerover", () => { this.isOnPauseButton = true })
+        this.buttonPauseEnd.on("pointerout", () => { this.isOnPauseButton = false })
+        this.buttonPauseEnd.visible = false;
+        this.buttonPauseEnd.scale.set(4);
+        this.buttonPauseEnd.position.set(50, 50);
+        this.addChild(this.buttonPauseEnd);
+
+
+
+
 
 
 
@@ -75,41 +124,44 @@ export class Scene1 extends Container implements IScene {
 
         // TOUCH CONTROL
         this.on('pointerdown', (event) => {
-            // El jugador tocó la pantalla, comienza a seguir el dedo del jugador
-            this.isDragging = true;
-            const newPosition = event.getLocalPosition(this.parent);
-            const currentX = Scene1.player.x;
-            const currentY = Scene1.player.y;
-            const distanceX = newPosition.x - currentX;
-            const distanceY = newPosition.y - currentY;
-            const speed = 0.9;
-            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-            const time = distance / speed;
 
-            let tweenActive = false;
-            const tween = new Tween(Scene1.player)
-                .to({ x: newPosition.x, y: newPosition.y }, time)
-                .start()
-                .onStart(() => {
-                    tweenActive = true;
-                })
-                .onUpdate(() => {
-                    if (!tweenActive) {
-                        tween.stop()
-                    }
-                })
-
-        });
-
-        this.on('pointermove', (event) => {
-            // Si el jugador está arrastrando el dedo, mueve la nave hacia la posición del dedo
-            if (this.isDragging) {
+            if (!this.isOnPauseButton) {
+                // El jugador tocó la pantalla, comienza a seguir el dedo del jugador
+                this.isDragging = true;
                 const newPosition = event.getLocalPosition(this.parent);
                 const currentX = Scene1.player.x;
                 const currentY = Scene1.player.y;
                 const distanceX = newPosition.x - currentX;
                 const distanceY = newPosition.y - currentY;
-                const speed = 0.9;
+                const speed = 1;
+                const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+                const time = distance / speed;
+
+                let tweenActive = false;
+                const tween = new Tween(Scene1.player)
+                    .to({ x: newPosition.x, y: newPosition.y }, time)
+                    .start()
+                    .onStart(() => {
+                        tweenActive = true;
+                    })
+                    .onUpdate(() => {
+                        if (!tweenActive || !this.isDragging) {
+                            tween.stop()
+                        }
+                    })
+            }
+
+        });
+
+        this.on('pointermove', (event) => {
+            // Si el jugador está arrastrando el dedo, mueve la nave hacia la posición del dedo
+            if (this.isDragging && !this.isOnPauseButton) {
+                const newPosition = event.getLocalPosition(this.parent);
+                const currentX = Scene1.player.x;
+                const currentY = Scene1.player.y;
+                const distanceX = newPosition.x - currentX;
+                const distanceY = newPosition.y - currentY;
+                const speed = 1;
                 const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
                 const time = distance / speed;
 
@@ -133,6 +185,20 @@ export class Scene1 extends Container implements IScene {
             this.isDragging = false;
         });
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -240,6 +306,7 @@ export class Scene1 extends Container implements IScene {
                 }
 
                 this.removeChild(Scene1.score);
+                this.removeChild(this.buttonPauseStart);
                 sound.stopAll();
                 sound.play("GameOver", { volume: 0.6, singleInstance: true });
                 Scene1.world.removeChild(Scene1.player);
@@ -309,7 +376,7 @@ export class Scene1 extends Container implements IScene {
                 const enemy = Scene1.enemies[j];
                 if (checkCollision(enemy, shot)) {
 
-                    sound.play("EnemyKilled", { volume: 0.6, singleInstance: true })
+                    sound.play("EnemyKilled", { volume: 0.9, singleInstance: true })
                     const explosion = new Explosion();
                     explosion.x = enemy.x + 4 * 6;
                     explosion.y = enemy.y + 4 * 6;
