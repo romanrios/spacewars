@@ -20,15 +20,15 @@ export class Player extends PhysicsContainer implements IHitbox {
         this.shipAnimated = new StateAnimation();
 
         this.shipAnimated.addState("idle", [
-            ("./ship.png"),
+            ("ship.png"),
         ]);
 
         this.shipAnimated.addState("left", [
-            ("./ship_left.png"),
+            ("ship_left.png"),
         ]);
 
         this.shipAnimated.addState("right", [
-            ("./ship_right.png"),
+            ("ship_right.png"),
         ]);
 
         this.shipAnimated.playState("idle", true);
