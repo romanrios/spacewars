@@ -102,7 +102,7 @@ export class Scene1 extends Container implements IScene {
             this.on('pointermove', (event) => {
                 if (this.isDragging && !this.isOnPauseButton) {
                     targetPosition = event.getLocalPosition(this.parent);
-                    targetPosition.y -= 55; // OFFSET
+                    targetPosition.y -= 65; // OFFSET
                 }
             });
 
