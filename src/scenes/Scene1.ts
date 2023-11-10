@@ -88,7 +88,7 @@ export class Scene1 extends Container implements IScene {
 
         if (Manager.movementType == "absolute") {
 
-            const speed = 20;
+            const speed = 28;
             let targetPosition: { x: number; y: number } | null = null;
 
             this.on('pointerdown', (event) => {
@@ -102,7 +102,7 @@ export class Scene1 extends Container implements IScene {
             this.on('pointermove', (event) => {
                 if (this.isDragging && !this.isOnPauseButton) {
                     targetPosition = event.getLocalPosition(this.parent);
-                    targetPosition.y -= 35; // OFFSET
+                    targetPosition.y -= 55; // OFFSET
                 }
             });
 
