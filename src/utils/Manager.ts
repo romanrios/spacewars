@@ -6,6 +6,8 @@ export class Manager {
 
     public static paused: boolean = false;
     public static muted: boolean = false;
+    public static movementType: string = "absolute";
+
 
     private constructor() { /*this class is purely static. No constructor to see here*/ }
 

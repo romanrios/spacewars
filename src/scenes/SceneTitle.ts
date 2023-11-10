@@ -1,4 +1,4 @@
-import { Container, Text } from "pixi.js";
+import { Container, Text, Texture } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Enemy } from "../game/Enemy";
@@ -52,7 +52,7 @@ export class SceneTitle extends Container implements IScene {
         this.addChild(highscore);
         highscore.visible = false;
 
-        const buttonHighscore = new Button("highscore.png", () => {
+        const buttonHighscore = new Button("highscore.png", 0.8, () => {
             buttonBack.visible = true;
             containerFront.visible = false;
             highscore.visible = true;
@@ -62,7 +62,7 @@ export class SceneTitle extends Container implements IScene {
         buttonHighscore.position.set(645, 70);
         containerFront.addChild(buttonHighscore);
 
-        const buttonBack = new Button("back.png", () => {
+        const buttonBack = new Button("back.png", 0.8, () => {
             buttonBack.visible = false;
             containerFront.visible = true;
             highscore.visible = false;
@@ -81,7 +81,7 @@ export class SceneTitle extends Container implements IScene {
 
 
 
-        const fullscreen = new Button("fullscreen.png", () => {
+        const fullscreen = new Button("fullscreen.png", 0.8, () => {
             if (!document.fullscreenElement) {
                 if (document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen();
@@ -95,34 +95,28 @@ export class SceneTitle extends Container implements IScene {
         fullscreen.position.set(300, 1060);
         containerFront.addChild(fullscreen);
 
-        const unmuted = new Button("unmuted.png", () => {
-            sound.muteAll();
-            Manager.muted = true;
-            muted.visible = true;
-            unmuted.visible = false;
+        const buttonMute = new Button("unmuted.png", 0.8, () => {
+            if (!Manager.muted) {
+                sound.muteAll();
+                Manager.muted = true;
+                buttonMute.changeTexture(Texture.from("muted.png"))
+            } else {
+                sound.unmuteAll();
+                Manager.muted = false;
+                buttonMute.changeTexture(Texture.from("unmuted.png"))
+            }
         });
-        unmuted.position.set(416, 1060);
-        containerFront.addChild(unmuted);
-
-        const muted = new Button("muted.png", () => {
-            sound.unmuteAll();
-            Manager.muted = false;
-            muted.visible = false;
-            unmuted.visible = true;
-        });
-        muted.visible = false;
-        muted.position.set(416, 1060);
-        containerFront.addChild(muted);
+        buttonMute.position.set(416, 1060);
+        containerFront.addChild(buttonMute);
 
         if (Manager.muted) {
-            muted.visible = true;
-            unmuted.visible = false;
+            buttonMute.changeTexture(Texture.from("muted.png"))
         }
 
         const createText = (random: boolean) => {
             const textTitle = new TitleText(random);
             textTitle.eventMode = "static";
-            textTitle.on("pointerup", () => {
+            textTitle.on("pointertap", () => {
                 containerFront.removeChild(textTitle);
                 textTitle.destroy();
                 createText(true);
@@ -137,10 +131,10 @@ export class SceneTitle extends Container implements IScene {
 
         const textPlay = new Text("[ PL4Y ]", { fontFamily: "PressStart2P", fontSize: 30, align: "center", fill: 0xFFFFFF });
         textPlay.anchor.set(0.5)
-        textPlay.position.set(Manager.width / 2, 890);
+        textPlay.position.set(Manager.width / 2, 800);
         textPlay.eventMode = "static";
         textPlay.cursor = "pointer";
-        textPlay.on("pointerup", () => Manager.changeScene(new Scene1))
+        textPlay.on("pointertap", () => Manager.changeScene(new Scene1))
         containerFront.addChild(textPlay);
 
         const textPlayTween = new Tween(textPlay)
@@ -158,6 +152,27 @@ export class SceneTitle extends Container implements IScene {
             })
 
 
+        const ButtonMove = new Text("MOVE CONTROL\n[ ABSOLUTE ]", { fontFamily: "PressStart2P", fontSize: 20, align: "center", fill: 0xFFFFFF, lineHeight: 32 });
+        ButtonMove.anchor.set(0.5)
+        ButtonMove.alpha = 0.6;
+        ButtonMove.position.set(Manager.width / 2, 950);
+        ButtonMove.eventMode = "static";
+        ButtonMove.cursor = "pointer";
+        ButtonMove.on("pointertap", () => {
+            if (Manager.movementType == "absolute") {
+                ButtonMove.text = "MOVE CONTROL\n[ RELATIVE ]";
+                Manager.movementType = "relative";
+            } else {
+                ButtonMove.text = "MOVE CONTROL\n[ ABSOLUTE ]";
+                Manager.movementType = "absolute";
+            }
+        });
+        if (Manager.movementType == "relative") {
+            ButtonMove.text = "MOVE CONTROL\n[ RELATIVE ]";
+        }
+        containerFront.addChild(ButtonMove);
+
+
 
 
         const textCredits = new Text("© 2023 Román Ríos", { fontFamily: "PressStart2P", fontSize: 18, align: "center", fill: 0xFFFFFF });
@@ -165,7 +180,7 @@ export class SceneTitle extends Container implements IScene {
         textCredits.position.set(Manager.width / 2 - 2, Manager.height - 70);
         textCredits.eventMode = "static";
         textCredits.cursor = "pointer";
-        textCredits.on("pointerup", () => {
+        textCredits.on("pointertap", () => {
             window.open("https://romanrios.github.io", "_blank");
         });
         containerFront.addChild(textCredits);
@@ -191,7 +206,7 @@ export class SceneTitle extends Container implements IScene {
 
         // ENEMIES
         if (this.elapsedTime > Math.random() * 2000 + 1000) {
-            const enemy = new Enemy("enemy");
+            const enemy = new Enemy("enemy", this);
             enemy.x = Math.random() * 680 + 20;
             this.containerBack.addChild(enemy);
             this.enemies.push(enemy);

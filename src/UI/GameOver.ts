@@ -24,7 +24,7 @@ export class GameOver extends Container {
         textScore.position.set(Manager.width / 2, 660);
         this.addChild(textScore);
 
-        this.buttonOk = new Button("ok.png", () => {
+        this.buttonOk = new Button("ok.png", 0.8, () => {
             agregarPuntaje(this.input.value, String(Scene1.score.score));
             Manager.changeScene(new SceneTitle(true));
         });
@@ -38,7 +38,7 @@ export class GameOver extends Container {
         })
         this.addChild(this.buttonOk);
 
-        const buttonBack = new Button("back.png", () => { Manager.changeScene((new SceneTitle(false))) });
+        const buttonBack = new Button("back.png", 0.8, () => { Manager.changeScene((new SceneTitle(false))) });
         buttonBack.scale.set(6);
         buttonBack.position.set(Manager.width / 2 - 100, 950);
         this.addChild(buttonBack);

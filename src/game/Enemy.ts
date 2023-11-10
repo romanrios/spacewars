@@ -2,8 +2,8 @@ import { Graphics, Rectangle, Sprite } from "pixi.js";
 import { PhysicsContainer } from "../utils/PhysicsContainer";
 import { IHitbox } from "./IHitbox";
 import { Tween } from "tweedle.js";
-import { Scene1 } from "../scenes/Scene1";
 import { sound } from "@pixi/sound";
+import { IScene } from "../utils/IScene";
 
 export class Enemy extends PhysicsContainer implements IHitbox {
 
@@ -12,11 +12,14 @@ export class Enemy extends PhysicsContainer implements IHitbox {
     private sprite: any;
     private type: string = ""
     private canShoot = false;
+    private parentScene: any;   
 
 
 
-    constructor(type: string) {
+    constructor(type: string, parent: IScene) {
         super();
+        
+        this.parentScene = parent;
 
         this.type = type;
         this.hitbox = new Graphics();
@@ -64,18 +67,19 @@ export class Enemy extends PhysicsContainer implements IHitbox {
     private shootCooldown = 0;
 
     public override update(deltaMS: number) {
-
         super.update(deltaMS / 1000);
         this.shootCooldown += deltaMS;
 
         if (this.type == "enemy" && this.shootCooldown > Math.random() * 1500 + 1000 && this.canShoot) {
             {
                 sound.play("Pew", { volume: 0.3, singleInstance: true });
-                const enemyShot = new Enemy("enemy_shot");
-                Scene1.world.addChild(enemyShot);
+                const enemyShot = new Enemy("enemy_shot", this);
+                this.parent.addChild(enemyShot);
                 enemyShot.x = this.x + 4 * 6;
                 enemyShot.y = this.y + 8 * 6;
-                Scene1.enemies.push(enemyShot);
+
+                this.parentScene.addShotToEnemiesArray(enemyShot);
+
                 this.shootCooldown = 0;
                 enemyShot.tween = new Tween(enemyShot)
                     .to({ x: Math.random() * 900 - 100, y: this.y + 1400 }, Math.random() * 1500 + 1000)

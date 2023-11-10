@@ -1,24 +1,26 @@
-import { Container, FederatedPointerEvent, Sprite } from "pixi.js";
+import { Container, FederatedPointerEvent, Sprite, Texture } from "pixi.js";
 
 export class Button extends Container {
+    private sprite: Sprite;
 
-
-    constructor(spriteString: string, callback: (event: FederatedPointerEvent) => void) {
+    constructor(spriteString: string, alpha: number, callback: (event: FederatedPointerEvent) => void) {
         super();
 
-        const sprite = Sprite.from(spriteString);
-        sprite.anchor.set(0.5);
+        this.sprite = Sprite.from(spriteString);
+        this.sprite.anchor.set(0.5);
         this.scale.set(4);
-        this.addChild(sprite);
+        this.addChild(this.sprite);
         this.alpha = 0.8;
         this.eventMode = "static";
         this.cursor = "pointer";
         this.on("pointerover", () => this.alpha = 1)
-        this.on("pointerout", () => this.alpha = 0.8)
-        this.on("pointerup", callback)
+        this.on("pointerout", () => this.alpha = alpha)
+        this.on("pointertap", callback)
 
     }
 
-
+    changeTexture(texture: Texture) {
+        this.sprite.texture = texture;
+    }
 
 }

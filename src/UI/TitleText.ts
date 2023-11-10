@@ -23,7 +23,7 @@ export class TitleText extends Container {
 
         this.textTitle = new Text("", { fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: this.randomColor });
         this.textTitle.anchor.set(0.5)
-        this.textTitle.position.set(Manager.width / 2, Manager.height / 2);
+        this.textTitle.position.set(Manager.width / 2, Manager.height / 2 - 100);
         this.textTitle.eventMode = "static";
         this.textTitle.cursor = "pointer";
         this.textTitle.alpha = 0.6;

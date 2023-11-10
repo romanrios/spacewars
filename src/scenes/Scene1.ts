@@ -1,4 +1,4 @@
-import { Container, Point, Text } from "pixi.js";
+import { Container, Point } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -12,18 +12,17 @@ import { Item } from "../game/Item";
 import { Background } from "../game/Background";
 import { Easing, Tween } from "tweedle.js";
 import { Explosion } from "../game/Explosion";
-import { Button } from "../UI/Button";
-// import { SceneTitle } from "./SceneTitle";
+import { ButtonPause } from "../UI/ButtonPause";
 
 
 export class Scene1 extends Container implements IScene {
 
-
-    public static player: Player;
     public static score: ScoreUI;
-    public static enemies: Enemy[] = [];
-    public static world: Container;
 
+    public enemies: Enemy[] = [];
+    public player: Player;
+
+    private world: Container;
     private background: Background;
     private background1: Background;
     private background2: Background;
@@ -37,11 +36,8 @@ export class Scene1 extends Container implements IScene {
     private gameover: boolean = false;
     private isDragging: boolean = false;
     private midEnemy: boolean = true;
-    private buttonPauseStart: Button;
-    private buttonPauseEnd: Button;
     private isOnPauseButton: boolean = false;
-    private textPause: any;
-    lastPosition: any;
+    private buttonPause: ButtonPause;
 
     constructor() {
         super();
@@ -49,66 +45,34 @@ export class Scene1 extends Container implements IScene {
         sound.stopAll();
         sound.play("SongLevel", { volume: 0.3, loop: true, singleInstance: true });
 
-        Scene1.world = new Container();
-        this.addChild(Scene1.world);
+        this.world = new Container();
+        this.addChild(this.world);
 
         this.background = new Background("background.png");
-        Scene1.world.addChild(this.background)
+        this.world.addChild(this.background)
 
         this.background1 = new Background("background1.png");
-        Scene1.world.addChild(this.background1)
+        this.world.addChild(this.background1)
 
         this.background2 = new Background("background2.png");
-        Scene1.world.addChild(this.background2)
+        this.world.addChild(this.background2)
 
 
         // PAUSE GAME
-        this.textPause = new Text("GAME PAUSED", { fontFamily: "PressStart2P", fontSize: 25, align: "center", fill: 0xFFFFFF });
-        this.textPause.anchor.set(0.5)
-        this.textPause.position.set(Manager.width / 2, Manager.height / 2);
-        this.textPause.visible = false;
-        this.addChild(this.textPause);
-
-        this.buttonPauseStart = new Button("pause_start.png", () => {
-            Manager.paused = true;
-            sound.pause("SongLevel");
-            sound.play("PauseStartSound", { volume: 0.5, singleInstance: true });
-            this.buttonPauseStart.visible = false;
-            this.buttonPauseEnd.visible = true;
-            this.textPause.visible = true;
-        });
-        this.buttonPauseStart.on("pointerdown", () => { this.isOnPauseButton = true })
+        this.buttonPause = new ButtonPause();
+        this.addChild(this.buttonPause);
+        this.buttonPause.eventMode = "static"
+        this.buttonPause.on("pointerdown", () => { this.isOnPauseButton = true })
+            .on("pointerup", () => { this.isOnPauseButton = false })
             .on("pointerupoutside", () => { this.isOnPauseButton = false })
-        this.buttonPauseStart.scale.set(4);
-        this.buttonPauseStart.position.set(50, 50);
-        this.addChild(this.buttonPauseStart);
-
-        this.buttonPauseEnd = new Button("pause_end.png", () => {
-            sound.play("PauseEndSound", { volume: 0.5, singleInstance: true });
-            Manager.paused = false;
-            sound.resume("SongLevel");
-            this.buttonPauseStart.visible = true;
-            this.buttonPauseEnd.visible = false;
-            this.textPause.visible = false;
-            this.isOnPauseButton = false;
-        });
-        this.buttonPauseEnd.visible = false;
-        this.buttonPauseEnd.scale.set(4);
-        this.buttonPauseEnd.position.set(50, 50);
-        this.addChild(this.buttonPauseEnd);
 
 
+        this.player = new Player();
+        this.player.position.set(Manager.width / 2, Manager.height + 200)
+        this.player.scale.set(6);
+        this.world.addChild(this.player);
 
-
-
-
-
-        Scene1.player = new Player();
-        Scene1.player.position.set(Manager.width / 2, Manager.height + 200)
-        Scene1.player.scale.set(6);
-        Scene1.world.addChild(Scene1.player);
-
-        new Tween(Scene1.player)
+        new Tween(this.player)
             .to({ y: 1100 }, 600)
             .start()
             .easing(Easing.Quadratic.Out)
@@ -119,104 +83,85 @@ export class Scene1 extends Container implements IScene {
 
 
 
-        // TOUCH CONTROL ABSOLUTE
 
-        // this.on('pointerdown', (event) => {
+        // TOUCH CONTROL ABSOLUTE 
 
-        //     if (!this.isOnPauseButton) {
-        //         this.isDragging = true;
-        //         const newPosition = event.getLocalPosition(this.parent);
-        //         const currentX = Scene1.player.x;
-        //         const currentY = Scene1.player.y;
-        //         const distanceX = newPosition.x - currentX;
-        //         const distanceY = newPosition.y - currentY;
-        //         const speed = 1;
-        //         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        //         const time = distance / speed;
+        if (Manager.movementType == "absolute") {
 
-        //         let tweenActive = false;
-        //         const tween = new Tween(Scene1.player)
-        //             .to({ x: newPosition.x, y: newPosition.y }, time)
-        //             .start()
-        //             .onStart(() => {
-        //                 tweenActive = true;
-        //             })
-        //             .onUpdate(() => {
-        //                 if (!tweenActive || !this.isDragging) {
-        //                     tween.stop()
-        //                 }
-        //             })
-        //     }
+            const speed = 20;
+            let targetPosition: { x: number; y: number } | null = null;
 
-        // });
+            this.on('pointerdown', (event) => {
+                if (!this.isOnPauseButton) {
+                    this.isDragging = true;
+                    targetPosition = event.getLocalPosition(this.parent);
+                    updatePosition(); // Inicia el bucle de animación
+                }
+            });
 
-        // this.on('pointermove', (event) => {
-        //     if (this.isDragging && !this.isOnPauseButton) {
-        //         const newPosition = event.getLocalPosition(this.parent);
-        //         const currentX = Scene1.player.x;
-        //         const currentY = Scene1.player.y;
-        //         const distanceX = newPosition.x - currentX;
-        //         const distanceY = newPosition.y - currentY;
-        //         const speed = 1;
-        //         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        //         const time = distance / speed;
+            this.on('pointermove', (event) => {
+                if (this.isDragging && !this.isOnPauseButton) {
+                    targetPosition = event.getLocalPosition(this.parent);
+                    targetPosition.y -= 35; // OFFSET
+                }
+            });
 
-        //         let tweenActive = false;
-        //         const tween = new Tween(Scene1.player)
-        //             .to({ x: newPosition.x, y: newPosition.y }, time)
-        //             .start()
-        //             .onStart(() => {
-        //                 tweenActive = true;
-        //             })
-        //             .onUpdate(() => {
-        //                 if (!tweenActive) {
-        //                     tween.stop()
-        //                 }
-        //             })
-        //     }
-        // });
+            this.on('pointerup', () => {
+                this.isDragging = false;
+            });
 
-        // this.on('pointerup', () => {
-        //     this.isDragging = false;
-        // });
+            const updatePosition = () => {
+                if (this.isDragging && targetPosition && !Manager.paused && Manager.movementType == "absolute") {
+                    const deltaX = targetPosition.x - this.player.x;
+                    const deltaY = targetPosition.y - this.player.y;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                    if (distance > 0) {
+                        const ratio = Math.min(speed / distance, 1);
+                        this.player.x += deltaX * ratio;
+                        this.player.y += deltaY * ratio;
+                    }
+
+                    requestAnimationFrame(updatePosition); // Solicitud de la próxima actualización
+                }
+            };
+
+            updatePosition(); // Inicia el bucle de animación al principio
+        }
+
+
 
 
         // TOUCH CONTROL RELATIVE
 
+        if (Manager.movementType == "relative") {
 
-        let initialTouchPosition: Point = new Point();
+            let initialTouchPosition: Point = new Point();
+            this.on('pointerdown', (event) => {
+                if (!this.isOnPauseButton && !Manager.paused) {
+                    this.isDragging = true;
+                    initialTouchPosition = event.getLocalPosition(this.parent);
+                }
+            });
+            this.on('pointermove', (event) => {
+                if (this.isDragging && !this.isOnPauseButton) {
+                    const currentTouchPosition = event.getLocalPosition(this.parent);
+                    const distanceX = currentTouchPosition.x - initialTouchPosition.x;
+                    const distanceY = currentTouchPosition.y - initialTouchPosition.y;
+                    const speed = 1;
+                    this.player.x += distanceX * speed;
+                    this.player.y += distanceY * speed;
+                    initialTouchPosition = currentTouchPosition;
+                }
+            });
+            this.on('pointerup', () => {
+                this.isDragging = false;
+            });
 
-        // ...
+        }
 
-        this.on('pointerdown', (event) => {
-            if (!this.isOnPauseButton) {
-                // El jugador tocó la pantalla, comienza a seguir el dedo del jugador
-                this.isDragging = true;
-                initialTouchPosition = event.getLocalPosition(this.parent);
-            }
-        });
 
-        this.on('pointermove', (event) => {
-            // Si el jugador está arrastrando el dedo, mueve la nave en la dirección del desplazamiento
-            if (this.isDragging && !this.isOnPauseButton) {
-                const currentTouchPosition = event.getLocalPosition(this.parent);
-                const distanceX = currentTouchPosition.x - initialTouchPosition.x;
-                const distanceY = currentTouchPosition.y - initialTouchPosition.y;
-                const speed = 0.8;
 
-                // Aplica el desplazamiento relativo a la posición actual de la nave
-                Scene1.player.x += distanceX * speed;
-                Scene1.player.y += distanceY * speed;
-
-                // Actualiza la posición inicial para el próximo movimiento relativo
-                initialTouchPosition = currentTouchPosition;
-            }
-        });
-
-        this.on('pointerup', () => {
-            // El jugador dejó de tocar la pantalla, detén el seguimiento del dedo
-            this.isDragging = false;
-        });
     }
 
 
@@ -239,7 +184,7 @@ export class Scene1 extends Container implements IScene {
 
         this.itemSpawnTime += _deltaTime;
         this.enemySpawnTime += _deltaTime;
-        Scene1.player.update(_deltaTime);
+        this.player.update(_deltaTime);
 
         this.background.y += _deltaTime * 0.3;
         this.background.y %= Manager.height;
@@ -255,7 +200,7 @@ export class Scene1 extends Container implements IScene {
         //ITEMS
         if (this.itemSpawnTime > Math.random() * 30000 + 15000) {
             const item = new Item(Math.random() * 6 + 1);
-            Scene1.world.addChild(item);
+            this.world.addChild(item);
             this.items.push(item);
             this.itemSpawnTime = 0;
         }
@@ -268,22 +213,22 @@ export class Scene1 extends Container implements IScene {
                 item.tween.stop();
                 item.tween2.stop();
                 item.destroy();
-            } else if (checkCollision(item, Scene1.player) && !this.gameover) {
+            } else if (checkCollision(item, this.player) && !this.gameover) {
                 sound.play("Item", { volume: 0.4, singleInstance: true });
                 this.items.splice(i, 1);
                 item.tween.stop();
                 item.tween2.stop();
                 item.destroy();
                 if (item.id <= 6) {
-                    Player.SHOOT_DELAY *= 0.97;
+                    Player.SHOOT_DELAY *= 0.95;
                 } else if (Player.SHOOT_STYLE == "normal") {
                     Player.SHOOT_STYLE = "double";
-                    Player.SHOOT_DELAY /= 0.7;
+                    Player.SHOOT_DELAY /= 0.8;
                 } else if (Player.SHOOT_STYLE == "double") {
                     Player.SHOOT_STYLE = "triple";
-                    Player.SHOOT_DELAY /= 0.7;
+                    Player.SHOOT_DELAY /= 0.8;
                 } else {
-                    Player.SHOOT_DELAY *= 0.97;
+                    Player.SHOOT_DELAY *= 0.95;
                 }
             }
 
@@ -296,9 +241,9 @@ export class Scene1 extends Container implements IScene {
 
         // ENEMIES
         if (this.enemySpawnTime > this.enemyMaxSpawnTime / 2 && this.midEnemy) {
-            const enemy = new Enemy("enemy");
-            Scene1.world.addChild(enemy);
-            Scene1.enemies.push(enemy);
+            const enemy = new Enemy("enemy", this);
+            this.world.addChild(enemy);
+            this.enemies.push(enemy);
             this.midEnemy = false;
 
 
@@ -307,9 +252,9 @@ export class Scene1 extends Container implements IScene {
 
         if (this.enemySpawnTime > Math.random() * 8000 + 2000 + this.enemyMaxSpawnTime) {
             for (let i = 0; i < ((Math.random() * 10 + Math.floor(this.enemyNumber / 3))); i++) {
-                const enemy = new Enemy("enemy");
-                Scene1.world.addChild(enemy);
-                Scene1.enemies.push(enemy);
+                const enemy = new Enemy("enemy", this);
+                this.world.addChild(enemy);
+                this.enemies.push(enemy);
             }
             this.enemySpawnTime = 0;
             this.enemyMaxSpawnTime *= 0.97;
@@ -317,32 +262,32 @@ export class Scene1 extends Container implements IScene {
             this.midEnemy = true;
         }
 
-        for (let i = Scene1.enemies.length - 1; i >= 0; i--) {
-            const enemy = Scene1.enemies[i];
+        for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const enemy = this.enemies[i];
             enemy.update(_deltaTime);
 
 
             if (enemy.y >= Manager.height) {
-                Scene1.enemies.splice(i, 1);
+                this.enemies.splice(i, 1);
                 enemy.tween.stop();
                 enemy.destroy();
             }
 
             // GAME OVER
-            if (checkCollision(enemy, Scene1.player) && !this.gameover) {
+            if (checkCollision(enemy, this.player) && !this.gameover) {
 
                 for (let i = 0; i < 15; i++) {
                     const explosionGameOver = new Explosion();
-                    explosionGameOver.x = Scene1.player.x + i * Math.random() * (-20) + 20;
-                    explosionGameOver.y = Scene1.player.y + i * Math.random() * (-20) + 20;
-                    Scene1.world.addChild(explosionGameOver);
+                    explosionGameOver.x = this.player.x + i * Math.random() * (-20) + 20;
+                    explosionGameOver.y = this.player.y + i * Math.random() * (-20) + 20;
+                    this.world.addChild(explosionGameOver);
                 }
 
                 this.removeChild(Scene1.score);
-                this.removeChild(this.buttonPauseStart);
+                this.removeChild(this.buttonPause);
                 sound.stopAll();
                 sound.play("GameOver", { volume: 0.6, singleInstance: true });
-                Scene1.world.removeChild(Scene1.player);
+                this.world.removeChild(this.player);
                 this.gameover = true;
                 const gameover = new GameOver();
                 this.addChild(gameover);
@@ -362,33 +307,33 @@ export class Scene1 extends Container implements IScene {
             this.canShoot = false;
 
             if (Player.SHOOT_STYLE == "normal" || Player.SHOOT_STYLE == "triple") {
-                const shot = new Shot(0);
-                shot.position.set(Scene1.player.x, Scene1.player.y - 20);
-                Scene1.world.addChild(shot);
+                const shot = new Shot(0, this);
+                shot.position.set(this.player.x, this.player.y - 20);
+                this.world.addChild(shot);
                 this.shots.push(shot);
             }
 
             if (Player.SHOOT_STYLE == "double") {
-                const shotL = new Shot(-100);
-                shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
-                Scene1.world.addChild(shotL);
+                const shotL = new Shot(-100, this);
+                shotL.position.set(this.player.x, this.player.y - 20);
+                this.world.addChild(shotL);
                 this.shots.push(shotL);
 
-                const shotR = new Shot(100);
-                shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
-                Scene1.world.addChild(shotR);
+                const shotR = new Shot(100, this);
+                shotR.position.set(this.player.x, this.player.y - 20);
+                this.world.addChild(shotR);
                 this.shots.push(shotR);
             }
 
             if (Player.SHOOT_STYLE == "triple") {
-                const shotL = new Shot(-200);
-                shotL.position.set(Scene1.player.x, Scene1.player.y - 20);
-                Scene1.world.addChild(shotL);
+                const shotL = new Shot(-200, this);
+                shotL.position.set(this.player.x, this.player.y - 20);
+                this.world.addChild(shotL);
                 this.shots.push(shotL);
 
-                const shotR = new Shot(200);
-                shotR.position.set(Scene1.player.x, Scene1.player.y - 20);
-                Scene1.world.addChild(shotR);
+                const shotR = new Shot(200, this);
+                shotR.position.set(this.player.x, this.player.y - 20);
+                this.world.addChild(shotR);
                 this.shots.push(shotR);
             }
 
@@ -405,8 +350,8 @@ export class Scene1 extends Container implements IScene {
                 shot.destroy();
             }
 
-            for (let j = Scene1.enemies.length - 1; j >= 0; j--) {
-                const enemy = Scene1.enemies[j];
+            for (let j = this.enemies.length - 1; j >= 0; j--) {
+                const enemy = this.enemies[j];
                 if (checkCollision(enemy, shot)) {
 
                     sound.play("EnemyKilled", { volume: 0.9, singleInstance: true })
@@ -417,7 +362,7 @@ export class Scene1 extends Container implements IScene {
 
                     // Elimina el disparo y el enemigo
                     this.shots.splice(i, 1);
-                    Scene1.enemies.splice(j, 1);
+                    this.enemies.splice(j, 1);
 
                     // Detiene y destruye el disparo
                     shot.tween.stop();
@@ -441,22 +386,26 @@ export class Scene1 extends Container implements IScene {
 
 
         // LIMITS
-        const marginX = Scene1.player.width / 2;
-        const marginY = Scene1.player.height / 2;
+        const marginX = this.player.width / 2;
+        const marginY = this.player.height / 2;
 
-        if (Scene1.player.x > Manager.width - marginX) {
-            Scene1.player.x = Manager.width - marginX;
-        } else if (Scene1.player.x < 0 + marginX) {
-            Scene1.player.x = 0 + marginX;
+        if (this.player.x > Manager.width - marginX) {
+            this.player.x = Manager.width - marginX;
+        } else if (this.player.x < 0 + marginX) {
+            this.player.x = 0 + marginX;
         }
 
-        if (Scene1.player.y > Manager.height - marginY) {
-            Scene1.player.y = Manager.height - marginY;
-        } else if (Scene1.player.y < 0 + marginY) {
-            Scene1.player.y = 0 + marginY;
+        if (this.player.y > Manager.height - marginY) {
+            this.player.y = Manager.height - marginY;
+        } else if (this.player.y < 0 + marginY) {
+            this.player.y = 0 + marginY;
         }
 
 
+    }
+
+    public addShotToEnemiesArray(shot: Enemy) {
+        this.enemies.push(shot);
     }
 
 }
