@@ -1,4 +1,4 @@
-import { Container, Text } from "pixi.js";
+import { Container, Point, Text } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -41,6 +41,7 @@ export class Scene1 extends Container implements IScene {
     private buttonPauseEnd: Button;
     private isOnPauseButton: boolean = false;
     private textPause: any;
+    lastPosition: any;
 
     constructor() {
         super();
@@ -60,7 +61,7 @@ export class Scene1 extends Container implements IScene {
         this.background2 = new Background("background2.png");
         Scene1.world.addChild(this.background2)
 
-        
+
         // PAUSE GAME
         this.textPause = new Text("GAME PAUSED", { fontFamily: "PressStart2P", fontSize: 25, align: "center", fill: 0xFFFFFF });
         this.textPause.anchor.set(0.5)
@@ -74,11 +75,10 @@ export class Scene1 extends Container implements IScene {
             sound.play("PauseStartSound", { volume: 0.5, singleInstance: true });
             this.buttonPauseStart.visible = false;
             this.buttonPauseEnd.visible = true;
-            this.isOnPauseButton = true;
             this.textPause.visible = true;
         });
-        this.buttonPauseStart.on("pointerover", () => { this.isOnPauseButton = true })
-        this.buttonPauseStart.on("pointerout", () => { this.isOnPauseButton = false })
+        this.buttonPauseStart.on("pointerdown", () => { this.isOnPauseButton = true })
+            .on("pointerupoutside", () => { this.isOnPauseButton = false })
         this.buttonPauseStart.scale.set(4);
         this.buttonPauseStart.position.set(50, 50);
         this.addChild(this.buttonPauseStart);
@@ -89,11 +89,9 @@ export class Scene1 extends Container implements IScene {
             sound.resume("SongLevel");
             this.buttonPauseStart.visible = true;
             this.buttonPauseEnd.visible = false;
-            this.isOnPauseButton = true;
             this.textPause.visible = false;
+            this.isOnPauseButton = false;
         });
-        this.buttonPauseEnd.on("pointerover", () => { this.isOnPauseButton = true })
-        this.buttonPauseEnd.on("pointerout", () => { this.isOnPauseButton = false })
         this.buttonPauseEnd.visible = false;
         this.buttonPauseEnd.scale.set(4);
         this.buttonPauseEnd.position.set(50, 50);
@@ -119,64 +117,99 @@ export class Scene1 extends Container implements IScene {
         Scene1.score = new ScoreUI();
         this.addChild(Scene1.score);
 
-        // for touch control
 
 
-        // TOUCH CONTROL
+        // TOUCH CONTROL ABSOLUTE
+
+        // this.on('pointerdown', (event) => {
+
+        //     if (!this.isOnPauseButton) {
+        //         this.isDragging = true;
+        //         const newPosition = event.getLocalPosition(this.parent);
+        //         const currentX = Scene1.player.x;
+        //         const currentY = Scene1.player.y;
+        //         const distanceX = newPosition.x - currentX;
+        //         const distanceY = newPosition.y - currentY;
+        //         const speed = 1;
+        //         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        //         const time = distance / speed;
+
+        //         let tweenActive = false;
+        //         const tween = new Tween(Scene1.player)
+        //             .to({ x: newPosition.x, y: newPosition.y }, time)
+        //             .start()
+        //             .onStart(() => {
+        //                 tweenActive = true;
+        //             })
+        //             .onUpdate(() => {
+        //                 if (!tweenActive || !this.isDragging) {
+        //                     tween.stop()
+        //                 }
+        //             })
+        //     }
+
+        // });
+
+        // this.on('pointermove', (event) => {
+        //     if (this.isDragging && !this.isOnPauseButton) {
+        //         const newPosition = event.getLocalPosition(this.parent);
+        //         const currentX = Scene1.player.x;
+        //         const currentY = Scene1.player.y;
+        //         const distanceX = newPosition.x - currentX;
+        //         const distanceY = newPosition.y - currentY;
+        //         const speed = 1;
+        //         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        //         const time = distance / speed;
+
+        //         let tweenActive = false;
+        //         const tween = new Tween(Scene1.player)
+        //             .to({ x: newPosition.x, y: newPosition.y }, time)
+        //             .start()
+        //             .onStart(() => {
+        //                 tweenActive = true;
+        //             })
+        //             .onUpdate(() => {
+        //                 if (!tweenActive) {
+        //                     tween.stop()
+        //                 }
+        //             })
+        //     }
+        // });
+
+        // this.on('pointerup', () => {
+        //     this.isDragging = false;
+        // });
+
+
+        // TOUCH CONTROL RELATIVE
+
+
+        let initialTouchPosition: Point = new Point();
+
+        // ...
+
         this.on('pointerdown', (event) => {
-
             if (!this.isOnPauseButton) {
                 // El jugador tocó la pantalla, comienza a seguir el dedo del jugador
                 this.isDragging = true;
-                const newPosition = event.getLocalPosition(this.parent);
-                const currentX = Scene1.player.x;
-                const currentY = Scene1.player.y;
-                const distanceX = newPosition.x - currentX;
-                const distanceY = newPosition.y - currentY;
-                const speed = 1;
-                const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-                const time = distance / speed;
-
-                let tweenActive = false;
-                const tween = new Tween(Scene1.player)
-                    .to({ x: newPosition.x, y: newPosition.y }, time)
-                    .start()
-                    .onStart(() => {
-                        tweenActive = true;
-                    })
-                    .onUpdate(() => {
-                        if (!tweenActive || !this.isDragging) {
-                            tween.stop()
-                        }
-                    })
+                initialTouchPosition = event.getLocalPosition(this.parent);
             }
-
         });
 
         this.on('pointermove', (event) => {
-            // Si el jugador está arrastrando el dedo, mueve la nave hacia la posición del dedo
+            // Si el jugador está arrastrando el dedo, mueve la nave en la dirección del desplazamiento
             if (this.isDragging && !this.isOnPauseButton) {
-                const newPosition = event.getLocalPosition(this.parent);
-                const currentX = Scene1.player.x;
-                const currentY = Scene1.player.y;
-                const distanceX = newPosition.x - currentX;
-                const distanceY = newPosition.y - currentY;
-                const speed = 1;
-                const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-                const time = distance / speed;
+                const currentTouchPosition = event.getLocalPosition(this.parent);
+                const distanceX = currentTouchPosition.x - initialTouchPosition.x;
+                const distanceY = currentTouchPosition.y - initialTouchPosition.y;
+                const speed = 0.8;
 
-                let tweenActive = false;
-                const tween = new Tween(Scene1.player)
-                    .to({ x: newPosition.x, y: newPosition.y }, time)
-                    .start()
-                    .onStart(() => {
-                        tweenActive = true;
-                    })
-                    .onUpdate(() => {
-                        if (!tweenActive) {
-                            tween.stop()
-                        }
-                    })
+                // Aplica el desplazamiento relativo a la posición actual de la nave
+                Scene1.player.x += distanceX * speed;
+                Scene1.player.y += distanceY * speed;
+
+                // Actualiza la posición inicial para el próximo movimiento relativo
+                initialTouchPosition = currentTouchPosition;
             }
         });
 
