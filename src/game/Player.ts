@@ -45,9 +45,39 @@ export class Player extends PhysicsContainer implements IHitbox {
         this.addChild(this.hitbox);
     }
 
-
+    private prevPositionX: number = 0;
+    // private currentAnimation: string = "idle";
+    private animationTimer: number = 0;
+    private animationThreshold: number = 200; // Umbral de tiempo en milisegundos
+    private resetTimer() {
+        this.animationTimer = 0;
+    }
 
     public override update(deltaMS: number) {
+
+        // Calcula la velocidad x
+        const velocityX = (this.x - this.prevPositionX) / (deltaMS / 1000);
+
+        // Almacena la posición actual como la posición anterior para el próximo ciclo
+        this.prevPositionX = this.x;
+
+        // Actualiza el temporizador
+        this.animationTimer += deltaMS;
+
+        // Cambia a las animaciones left o right
+        if (velocityX > 300) {
+            this.playState("right", true);
+            this.resetTimer();
+        } else if (velocityX < -300) {
+            this.playState("left", true);
+            this.resetTimer();
+        }
+
+        // Cambia a la animación idle si ha pasado suficiente tiempo desde el último cambio
+        if (this.animationTimer > this.animationThreshold) {
+            this.playState("idle", true);
+        }
+
         super.update(deltaMS / 1000);
         //this.robotAnimated.update(deltaMS / (1000 / 60), 0)
 
@@ -82,13 +112,13 @@ export class Player extends PhysicsContainer implements IHitbox {
             this.resetSpeedandAnimation();
         });
 
-        if (this.speed.x > 0) {
-            this.shipAnimated.playState("right", true);
-        } else if (this.speed.x < 0) {
-            this.shipAnimated.playState("left", true);
-        } else {
-            this.shipAnimated.playState("idle", true);
-        }
+        // if (this.speed.x > 0) {
+        //     this.shipAnimated.playState("right", true);
+        // } else if (this.speed.x < 0) {
+        //     this.shipAnimated.playState("left", true);
+        // } else {
+        //     this.shipAnimated.playState("idle", true);
+        // }
     }
 
 
@@ -102,7 +132,7 @@ export class Player extends PhysicsContainer implements IHitbox {
         return this.hitbox.getBounds()
     }
 
-   
+
 
 
 

@@ -10,7 +10,7 @@ export class Button extends Container {
         this.sprite.anchor.set(0.5);
         this.scale.set(4);
         this.addChild(this.sprite);
-        this.alpha = 0.8;
+        this.alpha = alpha;
         this.eventMode = "static";
         this.cursor = "pointer";
         this.on("pointerover", () => this.alpha = 1)

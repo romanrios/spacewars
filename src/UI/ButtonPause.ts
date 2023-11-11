@@ -57,10 +57,10 @@ export class ButtonPause extends Container {
                 }
             }
         });
-        fullscreen.position.set(300, 1060);
+        fullscreen.position.set(50, 150);
         container.addChild(fullscreen);
 
-        const buttonMute = new Button("unmuted.png", 0.8, () => {
+        const buttonMute = new Button("unmuted.png", 0.5, () => {
             if (!Manager.muted) {
                 sound.muteAll();
                 Manager.muted = true;
@@ -71,7 +71,7 @@ export class ButtonPause extends Container {
                 buttonMute.changeTexture(Texture.from("unmuted.png"))
             }
         })
-        buttonMute.position.set(416, 1060);
+        buttonMute.position.set(50, 250);
         container.addChild(buttonMute);
         if (Manager.muted) {
             buttonMute.changeTexture(Texture.from("muted.png"))
