@@ -15,16 +15,28 @@ export class Item extends Container implements IHitbox {
 
         this.id = id;
 
-        if (id <= 6) {
-            const itemSprite = Sprite.from("speed.png");
-            itemSprite.anchor.set(0.5);
-            this.addChild(itemSprite);
-        } else {
-            if (Player.SHOOT_STYLE == "normal") {
+        if (id == 1) {
+            if (Player.SHOOT_SIZE == "small") {
+                const itemSprite = Sprite.from("shot_size_powerup.png");
+                itemSprite.anchor.set(0.5);
+                this.addChild(itemSprite);
+            } else if (Player.SHOOT_SIZE == "medium") {
+                const itemSprite = Sprite.from("shot_size_powerup.png");
+                itemSprite.anchor.set(0.5);
+                this.addChild(itemSprite);
+            } else {
+                const itemSprite = Sprite.from("speed.png");
+                itemSprite.anchor.set(0.5);
+                this.addChild(itemSprite);
+            }
+
+        } else if (id == 2) {
+
+            if (Player.SHOOT_MULTIPLY == "normal") {
                 const itemSprite = Sprite.from("two.png");
                 itemSprite.anchor.set(0.5);
                 this.addChild(itemSprite);
-            } else if (Player.SHOOT_STYLE == "double") {
+            } else if (Player.SHOOT_MULTIPLY == "double") {
                 const itemSprite = Sprite.from("three.png");
                 itemSprite.anchor.set(0.5);
                 this.addChild(itemSprite);
@@ -33,7 +45,13 @@ export class Item extends Container implements IHitbox {
                 itemSprite.anchor.set(0.5);
                 this.addChild(itemSprite);
             }
+        } else {
+            const itemSprite = Sprite.from("speed.png");
+            itemSprite.anchor.set(0.5);
+            this.addChild(itemSprite);
+
         }
+
 
         this.scale.set(6);
         this.x = Math.random() * 580 + 80;

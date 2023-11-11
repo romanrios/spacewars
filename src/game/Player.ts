@@ -1,4 +1,4 @@
-import { Graphics, ObservablePoint, Rectangle } from "pixi.js";
+import { Graphics, Rectangle } from "pixi.js";
 import { PhysicsContainer } from "../utils/PhysicsContainer";
 import { Keyboard } from "../utils/Keyboard";
 import { IHitbox } from "./IHitbox";
@@ -6,10 +6,12 @@ import { StateAnimation } from "./StateAnimation";
 
 export class Player extends PhysicsContainer implements IHitbox {
 
-    public static readonly MOVE_SPEED = 350;
+    public static readonly MOVE_SPEED = 600;
     public static NORMAL_SHOOT_DELAY: number = 700;
     public static SHOOT_DELAY: number = Player.NORMAL_SHOOT_DELAY;
-    public static SHOOT_STYLE: string = "normal";
+    public static SHOOT_MULTIPLY: string = "normal";
+    public static SHOOT_SIZE: string = "small";
+
 
     private shipAnimated: StateAnimation;
     private hitbox: Graphics;
@@ -100,38 +102,7 @@ export class Player extends PhysicsContainer implements IHitbox {
         return this.hitbox.getBounds()
     }
 
-    public separate(overlap: Rectangle, platform: ObservablePoint<any>, platformSpeed: number) {
-        if (overlap.width < overlap.height) {
-            if (this.x > platform.x) {
-                //this.x += overlap.width;
-            } else if (this.x < platform.x) {
-                //this.x -= overlap.width;
-            }
-        }
-        else {
-
-            if (this.y < platform.y && this.speed.y > 1) {
-                this.y -= overlap.height;
-                this.speed.y = 0;
-
-                //
-                this.x += platformSpeed;
-
-
-                if (this.speed.x !== 0) {
-                    this.shipAnimated.playState("run", false)
-                }
-                else {
-                    this.shipAnimated.playState("idle", true)
-                }
-
-            } else if (this.y > platform.y) {
-                // this.y += overlap.height;
-                //  this.speed.y = 0;
-            }
-        }
-
-    }
+   
 
 
 

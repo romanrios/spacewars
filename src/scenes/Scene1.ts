@@ -89,12 +89,14 @@ export class Scene1 extends Container implements IScene {
         if (Manager.movementType == "absolute") {
 
             const speed = 28;
+            const offset = 70;
             let targetPosition: { x: number; y: number } | null = null;
 
             this.on('pointerdown', (event) => {
                 if (!this.isOnPauseButton) {
                     this.isDragging = true;
                     targetPosition = event.getLocalPosition(this.parent);
+                    targetPosition.y -= offset;
                     updatePosition(); // Inicia el bucle de animación
                 }
             });
@@ -102,7 +104,7 @@ export class Scene1 extends Container implements IScene {
             this.on('pointermove', (event) => {
                 if (this.isDragging && !this.isOnPauseButton) {
                     targetPosition = event.getLocalPosition(this.parent);
-                    targetPosition.y -= 65; // OFFSET
+                    targetPosition.y -= offset;
                 }
             });
 
@@ -111,7 +113,7 @@ export class Scene1 extends Container implements IScene {
             });
 
             const updatePosition = () => {
-                if (this.isDragging && targetPosition && !Manager.paused && Manager.movementType == "absolute") {
+                if (this.isDragging && targetPosition && !Manager.paused) {
                     const deltaX = targetPosition.x - this.player.x;
                     const deltaY = targetPosition.y - this.player.y;
                     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -199,7 +201,7 @@ export class Scene1 extends Container implements IScene {
 
         //ITEMS
         if (this.itemSpawnTime > Math.random() * 30000 + 15000) {
-            const item = new Item(Math.random() * 6 + 1);
+            const item = new Item(Math.floor(Math.random() * 4 + 1));
             this.world.addChild(item);
             this.items.push(item);
             this.itemSpawnTime = 0;
@@ -219,19 +221,30 @@ export class Scene1 extends Container implements IScene {
                 item.tween.stop();
                 item.tween2.stop();
                 item.destroy();
-                if (item.id <= 6) {
-                    Player.SHOOT_DELAY *= 0.95;
-                } else if (Player.SHOOT_STYLE == "normal") {
-                    Player.SHOOT_STYLE = "double";
-                    Player.SHOOT_DELAY /= 0.8;
-                } else if (Player.SHOOT_STYLE == "double") {
-                    Player.SHOOT_STYLE = "triple";
-                    Player.SHOOT_DELAY /= 0.8;
+
+                if (item.id == 1) {
+                    if (Player.SHOOT_SIZE == "small") {
+                        Player.SHOOT_SIZE = "medium";
+                    } else {
+                        Player.SHOOT_SIZE = "large";
+                    }
+                }
+
+                else if (item.id == 2) {
+                    if (Player.SHOOT_MULTIPLY == "normal") {
+                        Player.SHOOT_MULTIPLY = "double";
+                        Player.SHOOT_DELAY /= 0.8;
+                    } else if (Player.SHOOT_MULTIPLY == "double") {
+                        Player.SHOOT_MULTIPLY = "triple";
+                        Player.SHOOT_DELAY /= 0.8;
+                    } else {
+                        Player.SHOOT_DELAY *= 0.9;
+                    }
+
                 } else {
-                    Player.SHOOT_DELAY *= 0.95;
+                    Player.SHOOT_DELAY *= 0.9;
                 }
             }
-
         }
 
 
@@ -291,8 +304,9 @@ export class Scene1 extends Container implements IScene {
                 this.gameover = true;
                 const gameover = new GameOver();
                 this.addChild(gameover);
-                Player.SHOOT_STYLE = "normal";
+                Player.SHOOT_MULTIPLY = "normal";
                 Player.SHOOT_DELAY = Player.NORMAL_SHOOT_DELAY;
+                Player.SHOOT_SIZE = "small";
             }
 
         }
@@ -306,14 +320,14 @@ export class Scene1 extends Container implements IScene {
             setTimeout(() => { this.canShoot = true }, Player.SHOOT_DELAY);
             this.canShoot = false;
 
-            if (Player.SHOOT_STYLE == "normal" || Player.SHOOT_STYLE == "triple") {
+            if (Player.SHOOT_MULTIPLY == "normal" || Player.SHOOT_MULTIPLY == "triple") {
                 const shot = new Shot(0, this);
                 shot.position.set(this.player.x, this.player.y - 20);
                 this.world.addChild(shot);
                 this.shots.push(shot);
             }
 
-            if (Player.SHOOT_STYLE == "double") {
+            if (Player.SHOOT_MULTIPLY == "double") {
                 const shotL = new Shot(-100, this);
                 shotL.position.set(this.player.x, this.player.y - 20);
                 this.world.addChild(shotL);
@@ -325,7 +339,7 @@ export class Scene1 extends Container implements IScene {
                 this.shots.push(shotR);
             }
 
-            if (Player.SHOOT_STYLE == "triple") {
+            if (Player.SHOOT_MULTIPLY == "triple") {
                 const shotL = new Shot(-200, this);
                 shotL.position.set(this.player.x, this.player.y - 20);
                 this.world.addChild(shotL);
