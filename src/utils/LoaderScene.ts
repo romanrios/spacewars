@@ -1,4 +1,4 @@
-import { Container, Graphics, Assets, Text } from "pixi.js";
+import { Container, Graphics, Assets } from "pixi.js";
 import { manifest } from "../assets";
 import { IScene } from "./IScene";
 import { Manager } from "./Manager";
@@ -10,7 +10,6 @@ export class LoaderScene extends Container implements IScene {
     private loaderBar: Container;
     private loaderBarBoder: Graphics;
     private loaderBarFill: Graphics;
-    private texty: Text;
 
     constructor() {
         super();
@@ -18,14 +17,14 @@ export class LoaderScene extends Container implements IScene {
         const loaderBarWidth = Manager.width * 0.8;
 
         this.loaderBarFill = new Graphics();
-        this.loaderBarFill.beginFill(0x555555, 1)
-        this.loaderBarFill.drawRect(0, 0, loaderBarWidth, 70);
+        this.loaderBarFill.beginFill(0x0bffe6, 1)
+        this.loaderBarFill.drawRect(0, 0, loaderBarWidth, 50);
         this.loaderBarFill.endFill();
         this.loaderBarFill.scale.x = 0;
 
         this.loaderBarBoder = new Graphics();
-        this.loaderBarBoder.lineStyle(5, 0xFFFFFF, 1);
-        this.loaderBarBoder.drawRect(0, 0, loaderBarWidth, 70);
+        this.loaderBarBoder.lineStyle(4, 0xFFFFFF, 0.5);
+        this.loaderBarBoder.drawRect(0, 0, loaderBarWidth, 50);
 
         this.loaderBar = new Container();
         this.loaderBar.addChild(this.loaderBarFill);
@@ -33,11 +32,6 @@ export class LoaderScene extends Container implements IScene {
         this.loaderBar.position.x = (Manager.width - this.loaderBar.width) / 2;
         this.loaderBar.position.y = (Manager.height - this.loaderBar.height) / 2;
         this.addChild(this.loaderBar);
-
-        this.texty = new Text("", { fontSize: 30, fill: 0xFFFFFF });
-        this.texty.anchor.set(0.5);
-        this.texty.position.set(Manager.width / 2, Manager.height / 2);
-        this.addChild(this.texty)
 
         this.initializeLoader().then(() => {
             this.gameLoaded();

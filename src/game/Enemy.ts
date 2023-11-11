@@ -70,7 +70,7 @@ export class Enemy extends PhysicsContainer implements IHitbox {
         super.update(deltaMS / 1000);
         this.shootCooldown += deltaMS;
 
-        if (this.type == "enemy" && this.shootCooldown > Math.random() * 1500 + 1500 && this.canShoot) {
+        if (this.type == "enemy" && this.shootCooldown > Math.random() * 2000 + 1200 && this.canShoot) {
             {
                 sound.play("Pew", { volume: 0.3, singleInstance: true });
                 const enemyShot = new Enemy("enemy_shot", this);
