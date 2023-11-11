@@ -54,7 +54,7 @@ export class Enemy extends PhysicsContainer implements IHitbox {
 
         if (type == "enemy") {
             this.tween = new Tween(this)
-                .to({ x: Math.random() * 900 - 100, y: this.y + 1400 }, Math.random() * 3000 + 2500)
+                .to({ x: Math.random() * 900 - 100, y: this.y + 1400 }, Math.random() * 6000 + 2500)
                 .start()
         }
 
@@ -70,7 +70,7 @@ export class Enemy extends PhysicsContainer implements IHitbox {
         super.update(deltaMS / 1000);
         this.shootCooldown += deltaMS;
 
-        if (this.type == "enemy" && this.shootCooldown > Math.random() * 2000 + 1200 && this.canShoot) {
+        if (this.type == "enemy" && this.shootCooldown > Math.random() * 6000 + 1000 && this.canShoot) {
             {
                 sound.play("Pew", { volume: 0.3, singleInstance: true });
                 const enemyShot = new Enemy("enemy_shot", this);
@@ -82,7 +82,7 @@ export class Enemy extends PhysicsContainer implements IHitbox {
 
                 this.shootCooldown = 0;
                 enemyShot.tween = new Tween(enemyShot)
-                    .to({ x: Math.random() * 900 - 100, y: this.y + 1400 }, Math.random() * 2000 + 1500)
+                    .to({ x: Math.random() * 900 - 100, y: this.y + 1400 }, Math.random() * 3000 + 1800)
                     .start()
 
             }
