@@ -1,4 +1,4 @@
-import { Container, Point } from "pixi.js";
+import { Container, Point, Texture, TilingSprite } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -9,7 +9,6 @@ import { GameOver } from "../UI/GameOver";
 import { ScoreUI } from "../UI/ScoreUI";
 import { sound } from "@pixi/sound";
 import { Item } from "../game/Item";
-import { Background } from "../game/Background";
 import { Easing, Tween } from "tweedle.js";
 import { Explosion } from "../game/Explosion";
 import { ButtonPause } from "../UI/ButtonPause";
@@ -23,9 +22,9 @@ export class Scene1 extends Container implements IScene {
     public player: Player;
 
     private world: Container;
-    private background: Background;
-    private background1: Background;
-    private background2: Background;
+    private background: TilingSprite;
+    private background1: TilingSprite;
+    private background2: TilingSprite;
     private enemyNumber: number = 0;
     private enemySpawnTime: number = 0;
     private enemyMaxSpawnTime: number = 5000;
@@ -48,13 +47,16 @@ export class Scene1 extends Container implements IScene {
         this.world = new Container();
         this.addChild(this.world);
 
-        this.background = new Background("background.png");
+        this.background = new TilingSprite(Texture.from("background.png"), 720, 1280);
+        this.background.tileScale.set(6);
         this.world.addChild(this.background)
 
-        this.background1 = new Background("background1.png");
+        this.background1 = new TilingSprite(Texture.from("background1.png"), 720, 1280);
+        this.background1.tileScale.set(6);
         this.world.addChild(this.background1)
 
-        this.background2 = new Background("background2.png");
+        this.background2 = new TilingSprite(Texture.from("background2.png"), 720, 1280);
+        this.background2.tileScale.set(6);
         this.world.addChild(this.background2)
 
 
@@ -188,14 +190,14 @@ export class Scene1 extends Container implements IScene {
         this.enemySpawnTime += _deltaTime;
         this.player.update(_deltaTime);
 
-        this.background.y += _deltaTime * 0.3;
-        this.background.y %= Manager.height;
+        this.background.tilePosition.y += _deltaTime * 0.3;
+        this.background.tilePosition.y %= Manager.height;
 
-        this.background1.y += _deltaTime * 0.35;
-        this.background1.y %= Manager.height;
+        this.background1.tilePosition.y += _deltaTime * 0.35;
+        this.background1.tilePosition.y %= Manager.height;
 
-        this.background2.y += _deltaTime * 0.4;
-        this.background2.y %= Manager.height;
+        this.background2.tilePosition.y += _deltaTime * 0.4;
+        this.background2.tilePosition.y %= Manager.height;
 
 
 

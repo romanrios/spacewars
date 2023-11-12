@@ -1,4 +1,4 @@
-import { Container, Text } from "pixi.js";
+import { BitmapText, Container } from "pixi.js";
 import { getDatabase, ref, orderByChild, onValue, query } from 'firebase/database';
 import { Manager } from "../utils/Manager";
 import { SceneTitle } from "../scenes/SceneTitle";
@@ -43,25 +43,26 @@ export class HighScore extends Container {
             const espaciadoVertical = 50;
             const marginTop = 27;
             const fontSize = 22;
+            const fontFamily = "PressStart2P";
 
             this.scoresArray.forEach((puntuacion: any, indice: any) => {
                 const color = this.randomColor()
 
                 const nombreFormateado = this.formatName(puntuacion.nombre);
 
-                const filaNombres = new Text(
+                const filaNombres = new BitmapText(
                     `${indice + 1}. ${nombreFormateado}`, {
-                    fontFamily: "PressStart2P",
+                    fontName: fontFamily,
                     fontSize: fontSize,
-                    fill: color,
+                    tint: color,
                 });
                 filaNombres.position.set(0, indice * espaciadoVertical + marginTop);
 
-                const filaPuntos = new Text(
+                const filaPuntos = new BitmapText(
                     `${puntuacion.puntaje}`, {
-                    fontFamily: "PressStart2P",
+                    fontName: fontFamily,
                     fontSize: fontSize,
-                    fill: color,
+                    tint: color,
                 });
 
                 filaPuntos.anchor.x = 1;
@@ -87,7 +88,7 @@ export class HighScore extends Container {
             this.tablaPuntuaciones.position.set(110, 200);
             this.addChild(this.tablaPuntuaciones);
 
-            const textHighScores = new Text("HIGH\nSCORES", { fontFamily: "PressStart2P", fontSize: 45, align: "center", fill: 0xFFFFFF, lineHeight: 55 });
+            const textHighScores = new BitmapText("HIGH\nSCORES", { fontName: "PressStart2P", fontSize: 42, align: "center", /*lineHeight: 55*/ });
             textHighScores.anchor.set(0.5)
             textHighScores.position.set(Manager.width / 2, 130);
             this.addChild(textHighScores);
@@ -108,7 +109,7 @@ export class HighScore extends Container {
 
 
     private formatName(nombre: string): string {
-    const maxLength = 15;
+    const maxLength = 14;
     const currentLength = nombre.length;
 
     if (currentLength < maxLength) {

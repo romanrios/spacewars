@@ -39,14 +39,14 @@ export class Manager {
         // Create our pixi app
         Manager.app = new Application({
             view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
-            resolution: window.devicePixelRatio || 1,
-            autoDensity: true,
+            // resolution: window.devicePixelRatio || 1,
+            // autoDensity: true,
             backgroundColor: background,
             width: width,
             height: height,
-            antialias: false,
-            premultipliedAlpha: false,
-            backgroundAlpha: 1
+            // antialias: false,
+            // premultipliedAlpha: false,
+            // backgroundAlpha: 1
         });
 
         // eslint-disable-line ***PIXI DEV TOOLS***

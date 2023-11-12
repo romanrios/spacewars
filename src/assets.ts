@@ -6,10 +6,10 @@ export const manifest: ResolverManifest = {
             name: "mainScene",
             assets:
             {
-                SpriteSheet : "spritesheet.json",
+                SpriteSheet: "spritesheet.json",
 
-
-                Font: "PressStart2P.ttf",
+                PressStart2P: "PressStart2P.fnt",
+                FontTTF: "PressStart2P.ttf",
 
                 SongTitle: "naves_song_title.mp3",
                 SongLevel: "naves_song_level.mp3",

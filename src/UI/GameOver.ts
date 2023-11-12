@@ -1,4 +1,4 @@
-import { Container, Graphics, Text } from "pixi.js";
+import { Container, Graphics, BitmapText } from "pixi.js";
 import { Manager } from "../utils/Manager";
 import { SceneTitle } from "../scenes/SceneTitle";
 import { agregarPuntaje } from "../utils/firebaseConfig";
@@ -14,12 +14,12 @@ export class GameOver extends Container {
     constructor() {
         super()
 
-        const text = new Text("G4M3\n0V3R", { fontFamily: "PressStart2P", fontSize: 70, align: "center", fill: this.randomColor() });
+        const text = new BitmapText("G4M3\n0V3R", { fontName: "PressStart2P", fontSize: 70, align: "center", tint: this.randomColor() });
         text.anchor.set(0.5)
         text.position.set(Manager.width / 2, 480);
         this.addChild(text);
 
-        const textScore = new Text("YOUR SCORE IS\n\n" + String(Scene1.score.score), { fontFamily: "PressStart2P", fontSize: 30, align: "center", fill: this.randomColor() });
+        const textScore = new BitmapText("YOUR SCORE IS\n\n" + String(Scene1.score.score), { fontName: "PressStart2P", fontSize: 30, align: "center", tint: this.randomColor() });
         textScore.anchor.set(0.5)
         textScore.position.set(Manager.width / 2, 660);
         this.addChild(textScore);
@@ -56,7 +56,7 @@ export class GameOver extends Container {
             textStyle: {
                 fill: 0xFFFFFF,
                 fontSize: 30,
-                fontFamily: "PressStart2P",
+                fontFamily: "PressStart2P"
 
             },
         });

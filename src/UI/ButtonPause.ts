@@ -1,4 +1,4 @@
-import { Container, Text, Texture } from "pixi.js";
+import { Container, BitmapText, Texture } from "pixi.js";
 import { Manager } from "../utils/Manager";
 import { sound } from "@pixi/sound";
 import { Button } from "./Button";
@@ -12,7 +12,7 @@ export class ButtonPause extends Container {
 
         const container = new Container();
 
-        const textPause = new Text("GAME PAUSED", { fontFamily: "PressStart2P", fontSize: 25, align: "center", fill: 0xFFFFFF });
+        const textPause = new BitmapText("GAME PAUSED", { fontName: "PressStart2P", fontSize: 25, align: "center" });
         textPause.anchor.set(0.5)
         textPause.position.set(Manager.width / 2, Manager.height / 2);
         container.addChild(textPause);
@@ -44,7 +44,7 @@ export class ButtonPause extends Container {
         buttonBack.scale.set(4);
         buttonBack.position.set(50, 50);
         this.addChild(buttonBack);
-      
+
 
         const fullscreen = new Button("fullscreen.png", 0.5, () => {
             if (!document.fullscreenElement) {

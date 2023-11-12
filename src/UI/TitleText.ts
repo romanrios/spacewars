@@ -1,11 +1,11 @@
-import { Container, Text } from "pixi.js";
+import { Container, BitmapText } from "pixi.js";
 import { Tween } from "tweedle.js";
 import { Manager } from "../utils/Manager";
 
 
 
 export class TitleText extends Container {
-    private textTitle: Text;
+    private textTitle: BitmapText;
     private randomColor: string;
 
     constructor(random: boolean) {
@@ -21,7 +21,7 @@ export class TitleText extends Container {
         this.randomColor = randomColor()
 
 
-        this.textTitle = new Text("", { fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: this.randomColor });
+        this.textTitle = new BitmapText("", { fontName: "PressStart2P", fontSize: 90, align: "center", tint: this.randomColor });
         this.textTitle.anchor.set(0.5)
         this.textTitle.position.set(Manager.width / 2, Manager.height / 2 - 100);
         this.textTitle.eventMode = "static";
@@ -35,7 +35,7 @@ export class TitleText extends Container {
     }
 
 
-    private async updateTextWithDelay(text: Text, newText: string, delay: number): Promise<void> {
+    private async updateTextWithDelay(text: BitmapText, newText: string, delay: number): Promise<void> {
         return new Promise((resolve) => {
             new Tween(text)
                 .to({}, delay)
@@ -49,24 +49,24 @@ export class TitleText extends Container {
 
 
     private textStyling() {
-        this.textTitle.style =
-        {
-            "dropShadow": true,
-            "dropShadowAngle": 0,
-            "dropShadowAlpha": 0.4,
-            "dropShadowBlur": 13,
-            "dropShadowColor": this.randomColor,
-            "dropShadowDistance": 0,
+        // this.textTitle.style =
+        // {
+        //     "dropShadow": true,
+        //     "dropShadowAngle": 0,
+        //     "dropShadowAlpha": 0.4,
+        //     "dropShadowBlur": 13,
+        //     "dropShadowColor": this.randomColor,
+        //     "dropShadowDistance": 0,
 
-            fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: this.randomColor
-        }
+        //     fontFamily: "PressStart2P", fontSize: 90, align: "center", fill: this.randomColor
+        // }
         this.textTitle.alpha = 1;
     }
 
 
 
 
-    private async animateText(text: Text) {
+    private async animateText(text: BitmapText) {
         await this.updateTextWithDelay(text, "S", 100);
         await this.updateTextWithDelay(text, "SP", 100);
         await this.updateTextWithDelay(text, "SPC", 100);

@@ -1,10 +1,9 @@
-import { Container, Text, Texture } from "pixi.js";
+import { Container, BitmapText, Texture, TilingSprite, Graphics } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Enemy } from "../game/Enemy";
 import { Scene1 } from "./Scene1";
 import { sound } from "@pixi/sound";
-import { Background } from "../game/Background";
 import { Tween } from "tweedle.js";
 import { Button } from "../UI/Button";
 import { TitleText } from "../UI/TitleText";
@@ -13,13 +12,13 @@ import { HighScore } from "../UI/HighScore";
 
 export class SceneTitle extends Container implements IScene {
 
-    private background: Background;
-    private background1: Background;
-    private background2: Background;
+    private background: TilingSprite;
+    private background1: TilingSprite;
+    private background2: TilingSprite;
     private enemies: Enemy[] = [];
     private elapsedTime: number = 0;
     private containerBack: Container;
-    public static highestScore: Text;
+    public static highestScore: BitmapText;
 
     constructor(goToHighscore: boolean) {
         super();
@@ -30,22 +29,26 @@ export class SceneTitle extends Container implements IScene {
         this.containerBack = new Container();
         this.addChild(this.containerBack);
 
-        this.background = new Background("background.png");
+
+        this.background = new TilingSprite(Texture.from("background.png"), 720, 1280);
+        this.background.tileScale.set(6);
         this.containerBack.addChild(this.background)
 
-        this.background1 = new Background("background1.png");
+        this.background1 = new TilingSprite(Texture.from("background1.png"), 720, 1280);
+        this.background1.tileScale.set(6);
         this.containerBack.addChild(this.background1)
 
-        this.background2 = new Background("background2.png");
+        this.background2 = new TilingSprite(Texture.from("background2.png"), 720, 1280);
+        this.background2.tileScale.set(6);
         this.containerBack.addChild(this.background2)
 
         const containerFront = new Container();
         this.addChild(containerFront);
 
-        SceneTitle.highestScore = new Text("HIGH SCORE\n", { fontFamily: "PressStart2P", fontSize: 20, align: "center", fill: "0xFFFFFF", lineHeight: 30 });
+        SceneTitle.highestScore = new BitmapText("HIGH SCORE\n", { fontName: "PressStart2P", fontSize: 20, align: "center" /*lineHeight: 30*/ });
         SceneTitle.highestScore.anchor.x = 0.5;
         SceneTitle.highestScore.alpha = 0.5;
-        SceneTitle.highestScore.position.set(Manager.width / 2, 25);
+        SceneTitle.highestScore.position.set(Manager.width / 2, 32);
         containerFront.addChild(SceneTitle.highestScore);
 
         const highscore = new HighScore();
@@ -127,15 +130,19 @@ export class SceneTitle extends Container implements IScene {
 
 
 
+        const buttonPlay = new Graphics();
+        buttonPlay.beginFill(0xFFFFFF, 0.001);
+        buttonPlay.drawRect(-200, -50, 400, 100);
+        buttonPlay.position.set(Manager.width / 2, 800);
+        buttonPlay.eventMode = "static";
+        buttonPlay.cursor = "pointer";
 
-
-        const textPlay = new Text("[ PL4Y ]", { fontFamily: "PressStart2P", fontSize: 30, align: "center", fill: 0xFFFFFF });
+        const textPlay = new BitmapText("[ PL4Y ]", { fontName: "PressStart2P", fontSize: 30, align: "center" });
         textPlay.anchor.set(0.5)
-        textPlay.position.set(Manager.width / 2, 800);
-        textPlay.eventMode = "static";
-        textPlay.cursor = "pointer";
-        textPlay.on("pointertap", () => Manager.changeScene(new Scene1))
-        containerFront.addChild(textPlay);
+
+        buttonPlay.on("pointertap", () => Manager.changeScene(new Scene1))
+        buttonPlay.addChild(textPlay);
+        containerFront.addChild(buttonPlay);
 
         const textPlayTween = new Tween(textPlay)
             .to({}, 300)
@@ -152,30 +159,38 @@ export class SceneTitle extends Container implements IScene {
             })
 
 
-        const ButtonMove = new Text("MOVE CONTROL\n[ ABSOLUTE ]", { fontFamily: "PressStart2P", fontSize: 20, align: "center", fill: 0xFFFFFF, lineHeight: 32 });
-        ButtonMove.anchor.set(0.5)
-        ButtonMove.alpha = 0.6;
-        ButtonMove.position.set(Manager.width / 2, 950);
-        ButtonMove.eventMode = "static";
-        ButtonMove.cursor = "pointer";
-        ButtonMove.on("pointertap", () => {
+
+        const buttonMove = new Graphics();
+        buttonMove.beginFill(0xFFFFFF, 0.001)
+        buttonMove.drawRect(-150, -35, 300, 70)
+        buttonMove.position.set(Manager.width / 2, 950);
+        buttonMove.eventMode = "static";
+        buttonMove.cursor = "pointer";
+
+        const buttonMoveText = new BitmapText("MOVE CONTROL\n[ ABSOLUTE ]", { fontName: "PressStart2P", fontSize: 20, align: "center", /*lineHeight: 32*/ });
+        buttonMoveText.anchor.set(0.5)
+        buttonMoveText.alpha = 0.6;
+        buttonMove.addChild(buttonMoveText);
+
+        buttonMove.on("pointertap", () => {
             if (Manager.movementType == "absolute") {
-                ButtonMove.text = "MOVE CONTROL\n[ RELATIVE ]";
+                buttonMoveText.text = "MOVE CONTROL\n[ RELATIVE ]";
                 Manager.movementType = "relative";
             } else {
-                ButtonMove.text = "MOVE CONTROL\n[ ABSOLUTE ]";
+                buttonMoveText.text = "MOVE CONTROL\n[ ABSOLUTE ]";
                 Manager.movementType = "absolute";
             }
         });
         if (Manager.movementType == "relative") {
-            ButtonMove.text = "MOVE CONTROL\n[ RELATIVE ]";
+            buttonMoveText.text = "MOVE CONTROL\n[ RELATIVE ]";
         }
-        containerFront.addChild(ButtonMove);
+
+        containerFront.addChild(buttonMove);
 
 
 
 
-        const textCredits = new Text("© 2023 Román Ríos", { fontFamily: "PressStart2P", fontSize: 18, align: "center", fill: 0xFFFFFF });
+        const textCredits = new BitmapText("© 2023 Román Ríos", { fontName: "PressStart2P", fontSize: 18, align: "center", });
         textCredits.anchor.set(0.5)
         textCredits.position.set(Manager.width / 2 - 2, Manager.height - 70);
         textCredits.eventMode = "static";
@@ -195,14 +210,14 @@ export class SceneTitle extends Container implements IScene {
 
         this.elapsedTime += _deltaTime;
 
-        this.background.y += _deltaTime * 0.3;
-        this.background.y %= Manager.height;
+        this.background.tilePosition.y += _deltaTime * 0.3;
+        this.background.tilePosition.y %= Manager.height;
 
-        this.background1.y += _deltaTime * 0.35;
-        this.background1.y %= Manager.height;
+        this.background1.tilePosition.y += _deltaTime * 0.35;
+        this.background1.tilePosition.y %= Manager.height;
 
-        this.background2.y += _deltaTime * 0.4;
-        this.background2.y %= Manager.height;
+        this.background2.tilePosition.y += _deltaTime * 0.4;
+        this.background2.tilePosition.y %= Manager.height;
 
         // ENEMIES
         if (this.elapsedTime > Math.random() * 2000 + 1000) {
