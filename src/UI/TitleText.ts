@@ -23,7 +23,7 @@ export class TitleText extends Container {
 
         this.textTitle = new BitmapText("", { fontName: "PressStart2P", fontSize: 90, align: "center", tint: this.randomColor });
         this.textTitle.anchor.set(0.5)
-        this.textTitle.position.set(Manager.width / 2, Manager.height / 2 - 100);
+        this.textTitle.position.set(Manager.width / 2, 520);
         this.textTitle.eventMode = "static";
         this.textTitle.cursor = "pointer";
         this.textTitle.alpha = 0.6;

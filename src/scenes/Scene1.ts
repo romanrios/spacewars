@@ -1,4 +1,4 @@
-import { Container, Point, Texture, TilingSprite } from "pixi.js";
+import { Container, Point, Texture, TilingSprite, isMobile } from "pixi.js";
 import { IScene } from "../utils/IScene";
 import { Manager } from "../utils/Manager";
 import { Player } from "../game/Player";
@@ -37,6 +37,7 @@ export class Scene1 extends Container implements IScene {
     private midEnemy: boolean = true;
     private isOnPauseButton: boolean = false;
     private buttonPause: ButtonPause;
+    private callback: any;
 
     constructor() {
         super();
@@ -61,12 +62,40 @@ export class Scene1 extends Container implements IScene {
 
 
         // PAUSE GAME
-        this.buttonPause = new ButtonPause();
+        this.buttonPause = new ButtonPause(this);
         this.addChild(this.buttonPause);
         this.buttonPause.eventMode = "static"
         this.buttonPause.on("pointerdown", () => { this.isOnPauseButton = true })
             .on("pointerup", () => { this.isOnPauseButton = false })
             .on("pointerupoutside", () => { this.isOnPauseButton = false })
+
+        // // KEYBOARD PAUSE
+        // if (Keyboard.state.get("Escape")) {
+        //     this.buttonPause.pauseGame();
+        // }
+
+        if (!isMobile.any) {
+
+            this.callback = (event: { key: string; }) => {
+                if (event.key === 'Escape') {
+                    this.buttonPause.pauseGame();
+                }
+            }
+            document.addEventListener('keydown', this.callback)
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         this.player = new Player();
@@ -88,10 +117,28 @@ export class Scene1 extends Container implements IScene {
 
         // TOUCH CONTROL ABSOLUTE 
 
-        if (Manager.movementType == "absolute") {
+        if (Player.MOVEMENT_TYPE == "absolute") {
 
-            const speed = 28;
-            const offset = 70;
+            let offset: number;
+            if (Player.OFFSET == "medium") {
+                offset = 80;
+            } else if (Player.OFFSET == "high") {
+                offset = 100;
+            } else if (Player.OFFSET == "off") {
+                offset = 0;
+            } else {
+                offset = 60;
+            }
+
+            let speed: number;
+            if (Player.SHIP_SPEED == "high") {
+                speed = 80;
+            } else if (Player.SHIP_SPEED == "medium") {
+                speed = 50;
+            } else {
+                speed = 20;
+            }
+
             let targetPosition: { x: number; y: number } | null = null;
 
             this.on('pointerdown', (event) => {
@@ -115,7 +162,7 @@ export class Scene1 extends Container implements IScene {
             });
 
             const updatePosition = () => {
-                if (this.isDragging && targetPosition && !Manager.paused) {
+                if (this.isDragging && targetPosition && !Manager.PAUSED) {
                     const deltaX = targetPosition.x - this.player.x;
                     const deltaY = targetPosition.y - this.player.y;
                     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -130,6 +177,7 @@ export class Scene1 extends Container implements IScene {
                 }
             };
 
+
             updatePosition(); // Inicia el bucle de animación al principio
         }
 
@@ -138,11 +186,21 @@ export class Scene1 extends Container implements IScene {
 
         // TOUCH CONTROL RELATIVE
 
-        if (Manager.movementType == "relative") {
+        if (Player.MOVEMENT_TYPE == "relative") {
+
+            let speed: number;
+
+            if (Player.SHIP_SPEED == "high") {
+                speed = 1;
+            } else if (Player.SHIP_SPEED == "medium") {
+                speed = 0.8;
+            } else {
+                speed = 0.6;
+            }
 
             let initialTouchPosition: Point = new Point();
             this.on('pointerdown', (event) => {
-                if (!this.isOnPauseButton && !Manager.paused) {
+                if (!this.isOnPauseButton && !Manager.PAUSED) {
                     this.isDragging = true;
                     initialTouchPosition = event.getLocalPosition(this.parent);
                 }
@@ -152,7 +210,6 @@ export class Scene1 extends Container implements IScene {
                     const currentTouchPosition = event.getLocalPosition(this.parent);
                     const distanceX = currentTouchPosition.x - initialTouchPosition.x;
                     const distanceY = currentTouchPosition.y - initialTouchPosition.y;
-                    const speed = 1;
                     this.player.x += distanceX * speed;
                     this.player.y += distanceY * speed;
                     initialTouchPosition = currentTouchPosition;
@@ -201,9 +258,11 @@ export class Scene1 extends Container implements IScene {
 
 
 
+
+
         //ITEMS
         if (this.itemSpawnTime > Math.random() * 30000 + 15000) {
-            const item = new Item(Math.floor(Math.random() * 4 + 1));
+            const item = new Item(Math.floor(Math.random() * 3 + 1));
             this.world.addChild(item);
             this.items.push(item);
             this.itemSpawnTime = 0;
@@ -290,6 +349,8 @@ export class Scene1 extends Container implements IScene {
 
             // GAME OVER
             if (checkCollision(enemy, this.player) && !this.gameover) {
+
+                this.removeKeyboardPauseListener();
 
                 for (let i = 0; i < 15; i++) {
                     const explosionGameOver = new Explosion();
@@ -423,5 +484,9 @@ export class Scene1 extends Container implements IScene {
     public addShotToEnemiesArray(shot: Enemy) {
         this.enemies.push(shot);
     }
+
+    public removeKeyboardPauseListener() {
+        document.removeEventListener('keydown', this.callback)
+    };
 
 }

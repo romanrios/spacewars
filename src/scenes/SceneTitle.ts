@@ -8,6 +8,7 @@ import { Tween } from "tweedle.js";
 import { Button } from "../UI/Button";
 import { TitleText } from "../UI/TitleText";
 import { HighScore } from "../UI/HighScore";
+import { Player } from "../game/Player";
 
 
 export class SceneTitle extends Container implements IScene {
@@ -23,12 +24,15 @@ export class SceneTitle extends Container implements IScene {
     constructor(goToHighscore: boolean) {
         super();
 
+        const configFontsize = 16;
+
         sound.stopAll();
         sound.play("SongTitle", { volume: 0.6, loop: true, singleInstance: true });
 
+
+        // BG & CONTAINER
         this.containerBack = new Container();
         this.addChild(this.containerBack);
-
 
         this.background = new TilingSprite(Texture.from("background.png"), 720, 1280);
         this.background.tileScale.set(6);
@@ -45,6 +49,9 @@ export class SceneTitle extends Container implements IScene {
         const containerFront = new Container();
         this.addChild(containerFront);
 
+
+
+        // HIGHSCORE
         SceneTitle.highestScore = new BitmapText("HIGH SCORE\n", { fontName: "PressStart2P", fontSize: 20, align: "center" /*lineHeight: 30*/ });
         SceneTitle.highestScore.anchor.x = 0.5;
         SceneTitle.highestScore.alpha = 0.5;
@@ -84,38 +91,8 @@ export class SceneTitle extends Container implements IScene {
 
 
 
-        const fullscreen = new Button("fullscreen.png", 0.8, () => {
-            if (!document.fullscreenElement) {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        });
-        fullscreen.position.set(300, 1060);
-        containerFront.addChild(fullscreen);
 
-        const buttonMute = new Button("unmuted.png", 0.8, () => {
-            if (!Manager.muted) {
-                sound.muteAll();
-                Manager.muted = true;
-                buttonMute.changeTexture(Texture.from("muted.png"))
-            } else {
-                sound.unmuteAll();
-                Manager.muted = false;
-                buttonMute.changeTexture(Texture.from("unmuted.png"))
-            }
-        });
-        buttonMute.position.set(416, 1060);
-        containerFront.addChild(buttonMute);
-
-        if (Manager.muted) {
-            buttonMute.changeTexture(Texture.from("muted.png"))
-        }
-
+        // TITLE
         const createText = (random: boolean) => {
             const textTitle = new TitleText(random);
             textTitle.eventMode = "static";
@@ -130,10 +107,13 @@ export class SceneTitle extends Container implements IScene {
 
 
 
+
+
+        // PLAY
         const buttonPlay = new Graphics();
-        buttonPlay.beginFill(0xFFFFFF, 0.001);
+        buttonPlay.beginFill(0xFFFFFF, 0.0001);
         buttonPlay.drawRect(-200, -50, 400, 100);
-        buttonPlay.position.set(Manager.width / 2, 800);
+        buttonPlay.position.set(Manager.width / 2, 750);
         buttonPlay.eventMode = "static";
         buttonPlay.cursor = "pointer";
 
@@ -160,28 +140,32 @@ export class SceneTitle extends Container implements IScene {
 
 
 
+
+        // MOVE CONTROL
         const buttonMove = new Graphics();
         buttonMove.beginFill(0xFFFFFF, 0.001)
         buttonMove.drawRect(-150, -35, 300, 70)
-        buttonMove.position.set(Manager.width / 2, 950);
+        buttonMove.position.set(Manager.width / 2, 890);
         buttonMove.eventMode = "static";
         buttonMove.cursor = "pointer";
 
-        const buttonMoveText = new BitmapText("MOVE CONTROL\n[ ABSOLUTE ]", { fontName: "PressStart2P", fontSize: 20, align: "center", /*lineHeight: 32*/ });
+        const buttonMoveText = new BitmapText("MOVE CONTROL\n[ ABSOLUTE ]", { fontName: "PressStart2P", fontSize: configFontsize, align: "center", /*lineHeight: 32*/ });
         buttonMoveText.anchor.set(0.5)
         buttonMoveText.alpha = 0.6;
         buttonMove.addChild(buttonMoveText);
 
         buttonMove.on("pointertap", () => {
-            if (Manager.movementType == "absolute") {
+            if (Player.MOVEMENT_TYPE == "absolute") {
                 buttonMoveText.text = "MOVE CONTROL\n[ RELATIVE ]";
-                Manager.movementType = "relative";
+                Player.MOVEMENT_TYPE = "relative";
+                buttonOffset.visible = false;
             } else {
                 buttonMoveText.text = "MOVE CONTROL\n[ ABSOLUTE ]";
-                Manager.movementType = "absolute";
+                Player.MOVEMENT_TYPE = "absolute";
+                buttonOffset.visible = true;
             }
         });
-        if (Manager.movementType == "relative") {
+        if (Player.MOVEMENT_TYPE == "relative") {
             buttonMoveText.text = "MOVE CONTROL\n[ RELATIVE ]";
         }
 
@@ -190,9 +174,142 @@ export class SceneTitle extends Container implements IScene {
 
 
 
+
+
+        // SHIP SPEED
+        const buttonSpeed = new Graphics();
+        buttonSpeed.beginFill(0xFFFFFF, 0.001)
+        buttonSpeed.drawRect(-150, -35, 300, 70)
+        buttonSpeed.position.set(Manager.width / 2, 990);
+        buttonSpeed.eventMode = "static";
+        buttonSpeed.cursor = "pointer";
+        const buttonSpeedText = new BitmapText("SHIP SPEED\n[ HIGH ]", { fontName: "PressStart2P", fontSize: configFontsize, align: "center", /*lineHeight: 32*/ });
+        buttonSpeedText.anchor.set(0.5)
+        buttonSpeedText.alpha = 0.6;
+        buttonSpeed.addChild(buttonSpeedText);
+
+        buttonSpeed.on("pointertap", () => {
+            if (Player.SHIP_SPEED == "medium") {
+                buttonSpeedText.text = "SHIP SPEED\n[ HIGH ]";
+                Player.SHIP_SPEED = "high";
+                Player.KEYBOARD_SPEED = 700;
+            } else if (Player.SHIP_SPEED == "high") {
+                buttonSpeedText.text = "SHIP SPEED\n[ LOW ]";
+                Player.SHIP_SPEED = "low";
+                Player.KEYBOARD_SPEED = 300;
+            } else {
+                buttonSpeedText.text = "SHIP SPEED\n[ MEDIUM ]";
+                Player.SHIP_SPEED = "medium";
+                Player.KEYBOARD_SPEED = 500;
+            }
+        }
+        );
+
+        if (Player.SHIP_SPEED == "medium") {
+            buttonSpeedText.text = "SHIP SPEED\n[ MEDIUM ]";
+        } else if (Player.SHIP_SPEED == "high") {
+            buttonSpeedText.text = "SHIP SPEED\n[ HIGH ]";
+        } else {
+            buttonSpeedText.text = "SHIP SPEED\n[ LOW ]";
+        }
+
+        containerFront.addChild(buttonSpeed);
+
+
+
+
+
+
+
+        // OFFSET
+        const buttonOffset = new Graphics();
+        buttonOffset.beginFill(0xFFFFFF, 0.001)
+        buttonOffset.drawRect(-150, -35, 300, 70)
+        buttonOffset.position.set(Manager.width / 2, 1090);
+        buttonOffset.eventMode = "static";
+        buttonOffset.cursor = "pointer";
+        const buttonOffsetText = new BitmapText("OFFSET\n[ MEDIUM ]", { fontName: "PressStart2P", fontSize: configFontsize, align: "center", /*lineHeight: 32*/ });
+        buttonOffsetText.anchor.set(0.5)
+        buttonOffsetText.alpha = 0.6;
+        buttonOffset.addChild(buttonOffsetText);
+
+        buttonOffset.on("pointertap", () => {
+            if (Player.OFFSET == "medium") {
+                buttonOffsetText.text = "VERTICAL OFFSET\n[ HIGH ]";
+                Player.OFFSET = "high";
+            } else if (Player.OFFSET == "high") {
+                buttonOffsetText.text = "VERTICAL OFFSET\n[ OFF ]";
+                Player.OFFSET = "off";
+            } else if (Player.OFFSET == "off") {
+                buttonOffsetText.text = "VERTICAL OFFSET\n[ LOW ]";
+                Player.OFFSET = "low";
+            } else {
+                buttonOffsetText.text = "VERTICAL OFFSET\n[ MEDIUM ]";
+                Player.OFFSET = "medium";
+            }
+        }
+        );
+
+        if (Player.OFFSET == "medium") {
+            buttonOffsetText.text = "VERTICAL OFFSET\n[ MEDIUM ]";
+        } else if (Player.OFFSET == "high") {
+            buttonOffsetText.text = "VERTICAL OFFSET\n[ HIGH ]";
+        } else if (Player.OFFSET == "off") {
+            buttonOffsetText.text = "VERTICAL OFFSET\n[ OFF ]";
+        } else {
+            buttonOffsetText.text = "VERTICAL OFFSET\n[ LOW ]";
+        }
+        if (Player.MOVEMENT_TYPE == "relative") {
+            buttonOffset.visible = false;
+        }
+
+        containerFront.addChild(buttonOffset);
+
+
+
+
+        // FULLSCREEN
+        const fullscreen = new Button("fullscreen.png", 0.8, () => {
+            if (!document.fullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+        fullscreen.position.set(60, 60);
+        containerFront.addChild(fullscreen);
+
+
+
+        // MUTE
+        const buttonMute = new Button("unmuted.png", 0.8, () => {
+            if (!Manager.MUTED) {
+                sound.muteAll();
+                Manager.MUTED = true;
+                buttonMute.changeTexture(Texture.from("muted.png"))
+            } else {
+                sound.unmuteAll();
+                Manager.MUTED = false;
+                buttonMute.changeTexture(Texture.from("unmuted.png"))
+            }
+        });
+        buttonMute.position.set(60, 150);
+        containerFront.addChild(buttonMute);
+
+        if (Manager.MUTED) {
+            buttonMute.changeTexture(Texture.from("muted.png"))
+        }
+
+
+
+        // CREDITS
         const textCredits = new BitmapText("© 2023 Román Ríos", { fontName: "PressStart2P", fontSize: 18, align: "center", });
         textCredits.anchor.set(0.5)
-        textCredits.position.set(Manager.width / 2 - 2, Manager.height - 70);
+        textCredits.position.set(Manager.width / 2 - 2, Manager.height - 50);
         textCredits.eventMode = "static";
         textCredits.cursor = "pointer";
         textCredits.on("pointertap", () => {
@@ -205,8 +322,6 @@ export class SceneTitle extends Container implements IScene {
 
 
     public update(_deltaTime: number, _deltaFrame: number) {
-
-
 
         this.elapsedTime += _deltaTime;
 

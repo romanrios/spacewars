@@ -4,10 +4,8 @@ import { Group } from "tweedle.js";
 
 export class Manager {
 
-    public static paused: boolean = false;
-    public static muted: boolean = false;
-    public static movementType: string = "absolute";
-
+    public static PAUSED: boolean = false;
+    public static MUTED: boolean = false;
 
     private constructor() { /*this class is purely static. No constructor to see here*/ }
 
@@ -113,14 +111,14 @@ export class Manager {
     private static update(deltaFrame: number): void {
 
         // PAUSE THE GAME!
-        if (!Manager.paused) {
+        if (!Manager.PAUSED) {
 
-        // Let the current scene know that we updated it...
-        // Just for funzies, sanity check that it exists first.
+            // Let the current scene know that we updated it...
+            // Just for funzies, sanity check that it exists first.
 
             if (Manager.currentScene) {
                 Manager.currentScene.update(Ticker.shared.deltaMS, deltaFrame);
-                Group.shared.update(Ticker.shared.deltaMS,false); // for tweedle.js !! 
+                Group.shared.update(Ticker.shared.deltaMS, false); // for tweedle.js !! 
 
             }
             // as I said before, I HATE the "frame passed" approach. I would rather use `Manager.app.ticker.deltaMS`

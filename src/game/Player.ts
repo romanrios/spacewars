@@ -6,12 +6,15 @@ import { StateAnimation } from "./StateAnimation";
 
 export class Player extends PhysicsContainer implements IHitbox {
 
-    public static readonly MOVE_SPEED = 600;
-    public static NORMAL_SHOOT_DELAY: number = 700;
+    public static KEYBOARD_SPEED: number = 700;
+    public static NORMAL_SHOOT_DELAY: number = 650;
     public static SHOOT_DELAY: number = Player.NORMAL_SHOOT_DELAY;
     public static SHOOT_MULTIPLY: string = "normal";
     public static SHOOT_SIZE: string = "small";
-
+    
+    public static MOVEMENT_TYPE: string = "absolute";
+    public static OFFSET: string = "medium";
+    public static SHIP_SPEED: string = "high";
 
     private shipAnimated: StateAnimation;
     private hitbox: Graphics;
@@ -82,17 +85,17 @@ export class Player extends PhysicsContainer implements IHitbox {
         //this.robotAnimated.update(deltaMS / (1000 / 60), 0)
 
         if (Keyboard.state.get("ArrowRight")) {
-            this.speed.x = Player.MOVE_SPEED;
+            this.speed.x = Player.KEYBOARD_SPEED;
 
         } else if (Keyboard.state.get("ArrowLeft")) {
-            this.speed.x = -Player.MOVE_SPEED;
+            this.speed.x = -Player.KEYBOARD_SPEED;
 
         }
 
         if (Keyboard.state.get("ArrowDown")) {
-            this.speed.y = Player.MOVE_SPEED;
+            this.speed.y = Player.KEYBOARD_SPEED;
         } else if (Keyboard.state.get("ArrowUp")) {
-            this.speed.y = -Player.MOVE_SPEED;
+            this.speed.y = -Player.KEYBOARD_SPEED;
         }
 
 
