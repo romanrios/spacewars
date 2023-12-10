@@ -8,6 +8,10 @@ SP4C3 W4RS is a straightforward and simple shooter game that takes you on 8-bit 
 
 **Credits:** Original music, sprites, and programming by Román Ríos.
 
+🕹️ [Play on Github Pages](https://romanrios.github.io/spacewars/)
+
+🕹️ [Play on itch.io](https://romanrios.itch.io/spacewars)
+
 
 ## Key features:
 
