@@ -4,7 +4,7 @@
 
 ## Description:
 
-SP4C3 W4RS is a straightforward and simple shooter game that takes you on 8-bit pixel space battles against endless hordes, accompanied by a lively color palette and chiptune soundtrack with a modern twist.
+"SP4C3 W4RS" is a straightforward and simple shooter game that thrusts you into 8-bit pixel space battles against endless hordes, featuring a vibrant color palette and a chiptune soundtrack with a modern twist.
 
 **Credits:** Original music, sprites, and programming by Román Ríos.
 
@@ -15,13 +15,10 @@ SP4C3 W4RS is a straightforward and simple shooter game that takes you on 8-bit 
 
 ## Key features:
 
-**Simple controls:** use keyboard arrows, mouse, or play on your mobile. Can be paused with the [Escape] key.
-
-**Customize gameplay:** absolute or relative ship movement, adjustable speed and offset for mobile play.
-
-**Power-ups:** speed boosts, double and triple shot firepower.
-
-**Highscore table:** realtime database.
+- Simple Controls: Navigate using keyboard arrows, the mouse, or play on your cell phone. Pause the game with the [Escape] key.
+- Customizable Gameplay: Choose between absolute or relative ship movement, and adjust speed and offset for mobile play.
+- Power-Ups: Experience speed boosts and unleash double or triple shot firepower.
+- Highscore Table: Compete in a real-time database to claim your spot at the top.
 
 
 
