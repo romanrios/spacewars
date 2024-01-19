@@ -12,6 +12,8 @@
 
 🕹️ [Play on itch.io](https://romanrios.itch.io/spacewars)
 
+🕹️ [Play on gato.us](https://www.gato.us/game/sp4c3-w4rs/)
+
 
 ## Key features:
 
