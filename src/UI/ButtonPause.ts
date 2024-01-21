@@ -2,8 +2,8 @@ import { Container, BitmapText, Texture } from "pixi.js";
 import { Manager } from "../utils/Manager";
 import { sound } from "@pixi/sound";
 import { Button } from "./Button";
-import { SceneTitle } from "../scenes/SceneTitle";
 import { Player } from "../game/Player";
+import { SceneTitle } from "../scenes/SceneTitle";
 
 export class ButtonPause extends Container {
     private buttonPause: Button;

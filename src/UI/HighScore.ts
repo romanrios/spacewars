@@ -1,8 +1,8 @@
 import { BitmapText, Container } from "pixi.js";
 import { getDatabase, ref, orderByChild, onValue, query } from 'firebase/database';
 import { Manager } from "../utils/Manager";
-import { SceneTitle } from "../scenes/SceneTitle";
 import { Easing, Tween } from "tweedle.js";
+import { SceneTitle } from "../scenes/SceneTitle";
 
 export class HighScore extends Container {
     private scoresArray: any;

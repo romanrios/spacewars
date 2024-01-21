@@ -89,9 +89,6 @@ export class SceneTitle extends Container implements IScene {
         }
 
 
-
-
-
         // TITLE
         const createText = (random: boolean) => {
             const textTitle = new TitleText(random);
@@ -101,11 +98,9 @@ export class SceneTitle extends Container implements IScene {
                 textTitle.destroy();
                 createText(true);
             })
-            containerFront.addChild(textTitle);
+            containerFront.addChild(textTitle);            
         }
         createText(false);
-
-
 
 
 
@@ -307,7 +302,7 @@ export class SceneTitle extends Container implements IScene {
 
 
         // CREDITS
-        const textCredits = new BitmapText("© 2023 Román Ríos", { fontName: "PressStart2P", fontSize: 18, align: "center", });
+        const textCredits = new BitmapText("© 2023 ROMAN RIOS", { fontName: "PressStart2P", fontSize: 18, align: "center", });
         textCredits.anchor.set(0.5)
         textCredits.position.set(Manager.width / 2 - 2, Manager.height - 50);
         textCredits.eventMode = "static";
