@@ -9,6 +9,7 @@ import { Button } from "../UI/Button";
 import { TitleText } from "../UI/TitleText";
 import { HighScore } from "../UI/HighScore";
 import { Player } from "../game/Player";
+import FullScreen from "../FullScreen";
 
 
 export class SceneTitle extends Container implements IScene {
@@ -98,7 +99,7 @@ export class SceneTitle extends Container implements IScene {
                 textTitle.destroy();
                 createText(true);
             })
-            containerFront.addChild(textTitle);            
+            containerFront.addChild(textTitle);
         }
         createText(false);
 
@@ -265,14 +266,18 @@ export class SceneTitle extends Container implements IScene {
 
         // FULLSCREEN
         const fullscreen = new Button("fullscreen.png", 0.8, () => {
+
+
             if (!document.fullscreenElement) {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                }
+                FullScreen.goFullScreen();
+                // if (document.documentElement.requestFullscreen) {
+                //     document.documentElement.requestFullscreen();
+                // }
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                FullScreen.closefullscreen();
+                // if (document.exitFullscreen) {
+                //     document.exitFullscreen();
+                // }
             }
         });
         fullscreen.position.set(60, 60);

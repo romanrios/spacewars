@@ -4,6 +4,7 @@ import { sound } from "@pixi/sound";
 import { Button } from "./Button";
 import { Player } from "../game/Player";
 import { SceneTitle } from "../scenes/SceneTitle";
+import FullScreen from "../FullScreen";
 
 export class ButtonPause extends Container {
     private buttonPause: Button;
@@ -46,15 +47,19 @@ export class ButtonPause extends Container {
 
         const fullscreen = new Button("fullscreen.png", 0.5, () => {
             if (!document.fullscreenElement) {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                }
+                FullScreen.goFullScreen();
+                // if (document.documentElement.requestFullscreen) {
+                //     document.documentElement.requestFullscreen();
+                // }
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                FullScreen.closefullscreen();
+                // if (document.exitFullscreen) {
+                //     document.exitFullscreen();
+                // }
             }
         });
+
+
         fullscreen.position.set(50, 150);
         this.container.addChild(fullscreen);
 

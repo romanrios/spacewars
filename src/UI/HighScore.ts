@@ -66,7 +66,7 @@ export class HighScore extends Container {
                 });
 
                 filaPuntos.anchor.x = 1;
-                filaPuntos.position.set(505, indice * espaciadoVertical + marginTop)
+                filaPuntos.position.set(530, indice * espaciadoVertical + marginTop)
 
                 const filaContainer = new Container();
                 filaContainer.addChild(filaNombres);
@@ -85,7 +85,7 @@ export class HighScore extends Container {
 
             });
 
-            this.tablaPuntuaciones.position.set(110, 200);
+            this.tablaPuntuaciones.position.set(95, 200);
             this.addChild(this.tablaPuntuaciones);
 
             const textHighScores = new BitmapText("HIGH\nSCORES", { fontName: "PressStart2P", fontSize: 42, align: "center", /*lineHeight: 55*/ });
