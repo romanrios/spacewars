@@ -13,7 +13,7 @@ const firebaseConfig = {
 
 export const firebaseApp = initializeApp(firebaseConfig);
 export const database = getDatabase(firebaseApp);
-export const puntajesRef = ref(database, 'puntajes');
+export const puntajesRef = ref(database, 'puntajes2');
 
 export function agregarPuntaje(nombre: string, puntaje: string) {
     push(puntajesRef, {

@@ -13,7 +13,7 @@ export class HighScore extends Container {
 
         // Obtiene una referencia a la ubicación de los puntajes
         const database = getDatabase();
-        const puntajesRef = ref(database, 'puntajes');
+        const puntajesRef = ref(database, 'puntajes2');
 
         // Realiza una consulta para obtener los puntajes ordenados por puntaje (en orden descendente)
         const consultaPuntajes = query(puntajesRef, orderByChild('puntaje')); // Obtener los últimos 10 puntajes
@@ -85,15 +85,25 @@ export class HighScore extends Container {
 
             });
 
-            this.tablaPuntuaciones.position.set(95, 200);
+            this.tablaPuntuaciones.position.set(95, 170);
             this.addChild(this.tablaPuntuaciones);
 
             const textHighScores = new BitmapText("HIGH\nSCORES", { fontName: "PressStart2P", fontSize: 42, align: "center", /*lineHeight: 55*/ });
             textHighScores.anchor.set(0.5)
-            textHighScores.position.set(Manager.width / 2, 130);
+            textHighScores.position.set(Manager.width / 2, 110);
             this.addChild(textHighScores);
 
             SceneTitle.highestScore.text = "HIGH SCORE\n" + String(this.scoresArray[0].nombre) + "\n" + String(this.scoresArray[0].puntaje);
+
+            const previousScores = new BitmapText("[ SEE PREVIOUS SCORES ]", { fontName: "PressStart2P", fontSize: 18, align: "center", });
+            previousScores.anchor.set(0.5)
+            previousScores.position.set(Manager.width / 2, 1230);
+            previousScores.eventMode = "static";
+            previousScores.cursor = "pointer";
+            previousScores.on("pointerup", () => {
+                window.open("https://romanrios.github.io/scores/spacewars", "_blank");
+            });
+            this.addChild(previousScores);
 
         });
 
