@@ -13,7 +13,7 @@ export class HighScore extends Container {
 
         // Obtiene una referencia a la ubicación de los puntajes
         const database = getDatabase();
-        const puntajesRef = ref(database, 'puntajes2');
+        const puntajesRef = ref(database, 'puntajes');
 
         // Realiza una consulta para obtener los puntajes ordenados por puntaje (en orden descendente)
         const consultaPuntajes = query(puntajesRef, orderByChild('puntaje')); // Obtener los últimos 10 puntajes
